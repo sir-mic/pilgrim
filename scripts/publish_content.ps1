@@ -34,10 +34,10 @@ if (-not (Test-Path -LiteralPath $bundle)) {
   throw "Bundle not found: $bundle. Run `dart run pilgrim_build build` first."
 }
 
-$raw = Get-Content -LiteralPath $bundle -Raw
-$body = @{ message = $Message; content = $raw }
-$encoded = [System.Text.Encoding]::UTF8.GetBytes($raw)
-$base64 = [System.Convert]::ToBase64String($encoded)
+# Read raw bytes so UTF-8 stays intact (Get-Content -Raw would decode the
+# bundle as Windows-1252 and corrupt non-ASCII copy).
+$raw = [System.IO.File]::ReadAllBytes($bundle)
+$base64 = [System.Convert]::ToBase64String($raw)
 
 $headers = @{
   Authorization = "token $Token"

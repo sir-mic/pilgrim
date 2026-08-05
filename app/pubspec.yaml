@@ -33,6 +33,18 @@ dev_dependencies:
   drift_dev: ^2.34.5
   build_runner: ^2.15.1
   path: ^1.9.1
+  flutter_launcher_icons: ^0.14.4
+
+flutter_launcher_icons:
+  image_path: "assets/icon/icon.png"
+  android: true
+  adaptive_icon_background: "#000000"
+  adaptive_icon_foreground: "assets/icon/icon_foreground.png"
+  web:
+    generate: true
+    image_path: "assets/icon/icon.png"
+    background_color: "#000000"
+    theme_color: "#000000"
 
 flutter:
   uses-material-design: true
