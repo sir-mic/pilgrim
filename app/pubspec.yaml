@@ -1,0 +1,48 @@
+name: pilgrim_app
+description: Pilgrim — a quiet companion for reading your Bible.
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.12.2
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_web_plugins:
+    sdk: flutter
+
+  cupertino_icons: ^1.0.8
+  flutter_riverpod: ^2.6.1
+  drift: ^2.34.3
+  drift_flutter: ^0.3.1
+  flutter_local_notifications: ^22.2.0
+  timezone: ^0.11.1
+  intl: ^0.20.3
+  cryptography: ^2.9.0
+  http: ^1.6.0
+  pilgrim_content:
+    path: ../content
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+  flutter_lints: ^6.0.0
+  drift_dev: ^2.34.5
+  build_runner: ^2.15.1
+  path: ^1.9.1
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    - assets/content/content.json
+
+  fonts:
+    - family: Lora
+      fonts:
+        - asset: assets/fonts/Lora-Variable.ttf
+        - asset: assets/fonts/Lora-Italic-Variable.ttf
+          style: italic

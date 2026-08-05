@@ -1,0 +1,283 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:intl/intl.dart';
+
+import '../../core/data/models.dart';
+import '../../core/providers.dart';
+import '../../core/widgets/fade_route.dart';
+import '../../core/widgets/quiet_buttons.dart';
+import '../journal/journal_detail_screen.dart';
+import '../reading/reading_flow_screen.dart';
+
+/// Today's reading — the heart of the app.
+class HomeScreen extends ConsumerWidget {
+  const HomeScreen({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final reading = ref.watch(currentReadingProvider);
+    return SafeArea(
+      child: reading.when(
+        data: (value) => _TodayBody(reading: value),
+        loading: () => const Center(child: CircularProgressIndicator()),
+        error: (e, _) => const _NoPlanView(),
+      ),
+    );
+  }
+}
+
+class _TodayBody extends ConsumerWidget {
+  const _TodayBody({required this.reading});
+
+  final CurrentReading reading;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final theme = Theme.of(context);
+    final now = DateTime.now();
+    final weekday = DateFormat('EEEE').format(now);
+    final monthDay = DateFormat('MMMM d').format(now);
+
+    final showWelcome = reading.hasHistory &&
+        reading.todaysSession == null &&
+        !reading.planFinished;
+
+    return SingleChildScrollView(
+      padding: const EdgeInsets.fromLTRB(28, 32, 28, 40),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          if (showWelcome) ...[
+            Text(
+              'Welcome back.',
+              style: theme.textTheme.titleMedium
+                  ?.copyWith(color: theme.colorScheme.primary),
+            ),
+            Text(
+              'Let\'s continue where we left off.',
+              style: theme.textTheme.bodyMedium
+                  ?.copyWith(color: theme.colorScheme.onSurfaceVariant),
+            ),
+            const SizedBox(height: 24),
+          ],
+          Text(weekday,
+              style: theme.textTheme.labelSmall
+                  ?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
+          const SizedBox(height: 4),
+          Text(monthDay, style: theme.textTheme.displaySmall),
+          const SizedBox(height: 8),
+          Text(
+            '${reading.plan.title} · Day ${reading.currentDay} of ${reading.plan.totalDays}',
+            style: theme.textTheme.labelMedium
+                ?.copyWith(color: theme.colorScheme.onSurfaceVariant),
+          ),
+
+          const SizedBox(height: 40),
+
+          if (reading.planFinished)
+            _PlanFinished(planTitle: reading.plan.title)
+          else if (reading.todaysSession != null)
+            _CompletedToday(session: reading.todaysSession!)
+          else
+            _ReadingPrompt(reading: reading),
+        ],
+      ),
+    );
+  }
+}
+
+class _ReadingPrompt extends StatelessWidget {
+  const _ReadingPrompt({required this.reading});
+
+  final CurrentReading reading;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final day = reading.day!;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text('Today\'s Reading', style: theme.textTheme.labelSmall),
+        const SizedBox(height: 16),
+        for (final r in day.readings) ...[
+          Text(r.display(), style: theme.textTheme.displayMedium),
+          const SizedBox(height: 8),
+        ],
+        const SizedBox(height: 36),
+        Text('Estimated Time', style: theme.textTheme.labelSmall),
+        const SizedBox(height: 6),
+        Text('${day.estimatedMinutes} minutes',
+            style: theme.textTheme.headlineSmall),
+        const SizedBox(height: 44),
+        PrimaryButton(
+          label: 'Begin Reading',
+          onPressed: () => Navigator.of(context).push(
+            fadeRoute(ReadingFlowScreen(reading: reading)),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _CompletedToday extends ConsumerWidget {
+  const _CompletedToday({required this.session});
+
+  final SessionEntry session;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final theme = Theme.of(context);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Icon(Icons.check_circle,
+                color: theme.colorScheme.secondary, size: 22),
+            const SizedBox(width: 8),
+            Text('Today\'s reading is complete',
+                style: theme.textTheme.titleMedium),
+          ],
+        ),
+        const SizedBox(height: 24),
+        for (final r in session.readings) ...[
+          Text(r.display(), style: theme.textTheme.headlineMedium),
+          const SizedBox(height: 6),
+        ],
+        const SizedBox(height: 28),
+        if (session.mood != null)
+          Text('Mood · ${session.mood}', style: theme.textTheme.bodyMedium),
+        if (session.reflection.isNotEmpty) ...[
+          const SizedBox(height: 12),
+          Text(
+            '“${session.reflection}”',
+            style: theme.textTheme.bodyLarge
+                ?.copyWith(color: theme.colorScheme.onSurfaceVariant),
+            maxLines: 4,
+            overflow: TextOverflow.ellipsis,
+          ),
+        ],
+        const SizedBox(height: 12),
+        Text(
+          'The next reading will be here tomorrow.',
+          style: theme.textTheme.bodySmall,
+        ),
+        const SizedBox(height: 36),
+        GhostButton(
+          label: 'View in journal',
+          onPressed: () => Navigator.of(context).push(
+            fadeRoute(JournalDetailScreen(session: session)),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _PlanFinished extends ConsumerWidget {
+  const _PlanFinished({required this.planTitle});
+
+  final String planTitle;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final theme = Theme.of(context);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text('The journey continues.', style: theme.textTheme.displaySmall),
+        const SizedBox(height: 16),
+        Text(
+          'You\'ve completed your reading plan. Take a moment to look back '
+          'at where God has met you.',
+          style: theme.textTheme.bodyLarge
+              ?.copyWith(color: theme.colorScheme.onSurfaceVariant),
+        ),
+        const SizedBox(height: 44),
+        PrimaryButton(
+          label: 'Start Again',
+          onPressed: () async {
+            await ref.read(appRepositoryProvider).restartCurrentPlan();
+            ref.invalidate(currentReadingProvider);
+          },
+        ),
+        const SizedBox(height: 12),
+        GhostButton(
+          label: 'Choose Another Plan',
+          onPressed: () => Navigator.of(context)
+              .push(fadeRoute(const _PlanPick())),
+        ),
+      ],
+    );
+  }
+}
+
+class _PlanPick extends ConsumerWidget {
+  const _PlanPick();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final theme = Theme.of(context);
+    final plans = ref.watch(allPlansProvider);
+    return Scaffold(
+      appBar: AppBar(title: const Text('Choose a plan')),
+      body: SafeArea(
+        child: plans.when(
+          data: (list) => ListView(
+            padding: const EdgeInsets.all(28),
+            children: [
+              for (final plan in list)
+                Card(
+                  elevation: 0,
+                  color: theme.colorScheme.surfaceContainerHighest,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(18),
+                  ),
+                  child: ListTile(
+                    contentPadding: const EdgeInsets.all(18),
+                    title: Text(plan.title,
+                        style: theme.textTheme.titleMedium),
+                    subtitle: Padding(
+                      padding: const EdgeInsets.only(top: 6),
+                      child: Text(plan.description,
+                          style: theme.textTheme.bodySmall),
+                    ),
+                    onTap: () async {
+                      final repo = ref.read(appRepositoryProvider);
+                      await repo.setCurrentPlan(plan.slug);
+                      ref.invalidate(currentReadingProvider);
+                      if (context.mounted) {
+                        Navigator.of(context).popUntil((r) => r.isFirst);
+                      }
+                    },
+                  ),
+                ),
+            ],
+          ),
+          loading: () => const Center(child: CircularProgressIndicator()),
+          error: (_, _) => const SizedBox(),
+        ),
+      ),
+    );
+  }
+}
+
+class _NoPlanView extends StatelessWidget {
+  const _NoPlanView();
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(28),
+        child: Text(
+          'Choose a reading plan to begin.',
+          style: theme.textTheme.bodyLarge,
+        ),
+      ),
+    );
+  }
+}

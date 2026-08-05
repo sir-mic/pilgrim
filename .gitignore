@@ -1,0 +1,9 @@
+# Content package
+content/.dart_tool/
+content/build/
+# NEVER commit the signing key.
+content/keys/
+
+# Editors
+.idea/
+*.iml

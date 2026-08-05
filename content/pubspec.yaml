@@ -1,0 +1,14 @@
+name: pilgrim_content
+description: Pilgrim reading-plan content models, validation, signing and build tooling.
+version: 1.0.0
+publish_to: none
+
+environment:
+  sdk: ^3.12.0
+
+dependencies:
+  cryptography: ^2.7.0
+
+dev_dependencies:
+  lints: ^6.0.0
+  test: ^1.25.0
