@@ -2,7 +2,7 @@ name: pilgrim_app
 description: Pilgrim — a quiet companion for reading your Bible.
 publish_to: 'none'
 
-version: 1.0.1+2
+version: 1.0.2+3
 
 environment:
   sdk: ^3.12.2
@@ -24,6 +24,7 @@ dependencies:
   http: ^1.6.0
   pilgrim_content:
     path: ../content
+  flutter_timezone: ^5.1.0
 
 dev_dependencies:
   flutter_test:

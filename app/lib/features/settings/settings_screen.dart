@@ -146,6 +146,7 @@ class _ReminderTileState extends ConsumerState<_ReminderTile> {
       await repo.setSetting(AppRepository.keyReminderMinute, '$minute');
     }
     if (enabled) {
+      await NotificationService.instance.ensureExactAlarms();
       final messages = await ref.read(notificationMessagesProvider.future);
       final h = hour ?? _hour;
       final m = minute ?? _minute;
@@ -199,6 +200,22 @@ class _ReminderTileState extends ConsumerState<_ReminderTile> {
                   _minute = picked.minute;
                 });
                 await _apply(true, hour: picked.hour, minute: picked.minute);
+              },
+            ),
+          if (_enabled!)
+            ListTile(
+              leading: const Icon(Icons.notifications_active_outlined, size: 20),
+              title: const Text('Send test reminder'),
+              subtitle: const Text('A notification in about ten seconds'),
+              onTap: () async {
+                await NotificationService.instance.ensureExactAlarms();
+                await NotificationService.instance.scheduleTest();
+                if (!context.mounted) return;
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('Test reminder coming in a few seconds.'),
+                  ),
+                );
               },
             ),
         ],
