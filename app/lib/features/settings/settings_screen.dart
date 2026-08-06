@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:intl/intl.dart';
 import 'package:pilgrim_content/pilgrim_content.dart';
 
 import '../../core/data/app_repository.dart';
@@ -24,6 +25,18 @@ class SettingsScreen extends ConsumerWidget {
 
           _SectionHeader('Reminder'),
           const _ReminderTile(),
+          Padding(
+            padding: const EdgeInsets.only(left: 6, top: 8),
+            child: Text(
+              'Reminders are scheduled on this phone, not the server. '
+              'If one doesn\'t arrive, enable Autostart and set battery to '
+              '"No restrictions" for mic in system settings.',
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: theme.colorScheme.onSurfaceVariant,
+                fontStyle: FontStyle.italic,
+              ),
+            ),
+          ),
 
           const SizedBox(height: 28),
           _SectionHeader('Appearance'),
@@ -203,6 +216,19 @@ class _ReminderTileState extends ConsumerState<_ReminderTile> {
               },
             ),
           if (_enabled!)
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 0, 16, 4),
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  'Next reminder: ${_formatNext(_hour, _minute)}',
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: theme.colorScheme.onSurfaceVariant,
+                  ),
+                ),
+              ),
+            ),
+          if (_enabled!)
             ListTile(
               leading: const Icon(Icons.notifications_active_outlined, size: 20),
               title: const Text('Send test reminder'),
@@ -224,6 +250,17 @@ class _ReminderTileState extends ConsumerState<_ReminderTile> {
   }
 
   static String _two(int n) => n.toString().padLeft(2, '0');
+
+  /// The next [hour]:[minute] from the device's local clock — today if still
+  /// ahead, otherwise tomorrow.
+  static String _formatNext(int hour, int minute) {
+    final now = DateTime.now();
+    var next = DateTime(now.year, now.month, now.day, hour, minute);
+    if (!next.isAfter(now)) {
+      next = next.add(const Duration(days: 1));
+    }
+    return DateFormat('EEEE, MMM d, h:mm a').format(next);
+  }
 }
 
 class _PlanTile extends ConsumerStatefulWidget {
