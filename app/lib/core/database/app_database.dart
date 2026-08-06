@@ -96,6 +96,23 @@ class SettingsTable extends Table {
   Set<Column> get primaryKey => {key};
 }
 
+/// Partial progress through a single day's reading, so a reader can rest and
+/// resume later. `done` holds a JSON array of indices into that day's
+/// `readings`. Keyed by (planSlug, date) so stale progress naturally expires
+/// when a new day begins.
+class ReadingProgress extends Table {
+  TextColumn get planSlug => text()();
+
+  TextColumn get date => text()();
+
+  IntColumn get dayIndex => integer()();
+
+  TextColumn get done => text()();
+
+  @override
+  Set<Column> get primaryKey => {planSlug, date};
+}
+
 @DriftDatabase(
   tables: [
     ContentMeta,
@@ -105,6 +122,7 @@ class SettingsTable extends Table {
     NotificationMessages,
     Sessions,
     SettingsTable,
+    ReadingProgress,
   ],
 )
 class AppDatabase extends _$AppDatabase {
@@ -113,11 +131,16 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase.forTesting(super.executor);
 
   @override
-  int get schemaVersion => 1;
+  int get schemaVersion => 2;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
         onCreate: (m) async => m.createAll(),
+        onUpgrade: (m, from, to) async {
+          if (from < 2) {
+            await m.createTable(readingProgress);
+          }
+        },
         beforeOpen: (details) async {
           await customStatement('PRAGMA foreign_keys = ON');
         },

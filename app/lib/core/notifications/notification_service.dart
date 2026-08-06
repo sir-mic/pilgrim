@@ -74,7 +74,7 @@ class NotificationService {
 
     await _plugin.zonedSchedule(
       id: 0,
-      title: 'Pilgrim',
+      title: 'mic',
       body: message,
       scheduledDate: scheduled,
       notificationDetails: details,

@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:math';
 
 import 'package:drift/drift.dart';
@@ -123,8 +124,10 @@ class AppRepository {
   }
 
   /// Restarts [planSlug] from day one without touching the journal.
-  Future<void> restartPlan(String planSlug) =>
-      setSetting(progressKey(planSlug), '0');
+  Future<void> restartPlan(String planSlug) async {
+    await setSetting(progressKey(planSlug), '0');
+    await clearReadingProgress(planSlug, DateTime.now());
+  }
 
   /// Restarts whatever plan is currently selected.
   Future<void> restartCurrentPlan() async {
@@ -152,13 +155,72 @@ class AppRepository {
     }
     final completed = await completedCount(planSlug);
     final todaysSession = await sessionOnDate(planSlug, today);
+    final done = await readingProgress(planSlug, today) ?? const <int>[];
     return CurrentReading(
       plan: plan,
       currentDay: completed + 1,
       completedCount: completed,
       todaysSession: todaysSession,
+      inProgressDone: done,
+      progressDate: dateKey(today),
     );
   }
+
+  // ------------------------------------------------------- partial progress
+
+  /// `yyyy-MM-dd` key identifying a calendar day.
+  static String dateKey(DateTime d) =>
+      '${d.year}-${_two(d.month)}-${_two(d.day)}';
+
+  static String _two(int n) => n.toString().padLeft(2, '0');
+
+  /// Indices of today's readings already marked done, or null if none yet.
+  Future<List<int>?> readingProgress(String planSlug, DateTime date) async {
+    final row = await (_db.select(_db.readingProgress)
+          ..where((t) =>
+              t.planSlug.equals(planSlug) & t.date.equals(dateKey(date))))
+        .getSingleOrNull();
+    if (row == null) return null;
+    return (jsonDecode(row.done) as List<dynamic>).cast<int>();
+  }
+
+  /// Persists which readings are marked done today. Empty clears the entry.
+  Future<void> setReadingProgress({
+    required String planSlug,
+    required DateTime date,
+    required int dayIndex,
+    required List<int> done,
+  }) async {
+    if (done.isEmpty) {
+      await clearReadingProgress(planSlug, date);
+      return;
+    }
+    await _db.into(_db.readingProgress).insertOnConflictUpdate(
+          ReadingProgressCompanion.insert(
+            planSlug: planSlug,
+            date: dateKey(date),
+            dayIndex: dayIndex,
+            done: jsonEncode(done),
+          ),
+        );
+  }
+
+  Future<void> clearReadingProgress(String planSlug, DateTime date) async {
+    await (_db.delete(_db.readingProgress)
+          ..where((t) =>
+              t.planSlug.equals(planSlug) & t.date.equals(dateKey(date))))
+        .go();
+  }
+
+  Stream<List<ReadingProgressEntry>> watchReadingProgress() =>
+      _db.select(_db.readingProgress).watch().map((rows) => rows
+          .map((r) => ReadingProgressEntry(
+                planSlug: r.planSlug,
+                date: r.date,
+                dayIndex: r.dayIndex,
+                done: (jsonDecode(r.done) as List<dynamic>).cast<int>(),
+              ))
+          .toList());
 
   // ----------------------------------------------------------------- sessions
 
@@ -187,6 +249,7 @@ class AppRepository {
             ),
           );
       await setSetting(progressKey(planSlug), '$dayIndex');
+      await clearReadingProgress(planSlug, date);
       return newId;
     });
     return id;

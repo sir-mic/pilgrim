@@ -80,10 +80,10 @@ class SettingsScreen extends ConsumerWidget {
               borderRadius: BorderRadius.circular(16),
             ),
             child: const ListTile(
-              title: Text('Pilgrim'),
+              title: Text('mic'),
               subtitle: Text(
                 'A quiet companion for reading the Bible.\n'
-                'Version 0.1',
+                'Version 1.0',
               ),
             ),
           ),

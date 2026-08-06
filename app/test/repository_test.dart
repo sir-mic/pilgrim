@@ -128,6 +128,102 @@ void main() {
     expect(await repo.isOnboarded(), isTrue);
   });
 
+  group('reading progress', () {
+    final day = DateTime(2026, 8, 5);
+
+    test('partial progress persists, reads back, and clears', () async {
+      await repo.setReadingProgress(
+        planSlug: 'slow-walk',
+        date: day,
+        dayIndex: 1,
+        done: [0],
+      );
+      expect(await repo.readingProgress('slow-walk', day), [0]);
+
+      await repo.setReadingProgress(
+        planSlug: 'slow-walk',
+        date: day,
+        dayIndex: 1,
+        done: [0, 1],
+      );
+      expect(await repo.readingProgress('slow-walk', day), [0, 1]);
+
+      await repo.setReadingProgress(
+        planSlug: 'slow-walk',
+        date: day,
+        dayIndex: 1,
+        done: [],
+      );
+      expect(await repo.readingProgress('slow-walk', day), isNull);
+    });
+
+    test('progress is keyed by date, so stale days are ignored', () async {
+      await repo.setReadingProgress(
+        planSlug: 'slow-walk',
+        date: day,
+        dayIndex: 1,
+        done: [0],
+      );
+      expect(
+        await repo.readingProgress('slow-walk', day.add(const Duration(days: 1))),
+        isNull,
+      );
+    });
+
+    test('currentReading includes today\'s partial progress', () async {
+      await content.reconcile(await loadBundled());
+      await repo.setCurrentPlan('bible-in-one-year');
+      await repo.setReadingProgress(
+        planSlug: 'bible-in-one-year',
+        date: day,
+        dayIndex: 1,
+        done: [0, 2],
+      );
+
+      final reading = await repo.currentReading('bible-in-one-year', day);
+      expect(reading.inProgressDone, [0, 2]);
+      expect(reading.hasInProgress, isTrue);
+      expect(reading.progressDate, '2026-08-05');
+    });
+
+    test('completing a session clears the day\'s partial progress', () async {
+      await content.reconcile(await loadBundled());
+      await repo.setCurrentPlan('slow-walk');
+      await repo.setReadingProgress(
+        planSlug: 'slow-walk',
+        date: day,
+        dayIndex: 1,
+        done: [0],
+      );
+
+      final reading = await repo.currentReading('slow-walk', day);
+      await repo.insertSession(
+        date: day,
+        planSlug: 'slow-walk',
+        dayIndex: reading.currentDay,
+        prompt: 'What did God show you today?',
+        reflection: 'He is near.',
+        readings: reading.day!.readings,
+      );
+
+      expect(await repo.readingProgress('slow-walk', day), isNull);
+    });
+
+    test('restarting a plan clears today\'s partial progress', () async {
+      await repo.setReadingProgress(
+        planSlug: 'slow-walk',
+        date: DateTime.now(),
+        dayIndex: 3,
+        done: [0],
+      );
+      await repo.restartPlan('slow-walk');
+      expect(
+        await repo.readingProgress('slow-walk', DateTime.now()),
+        isNull,
+      );
+    });
+  });
+
   group('remote refresh', () {
     /// Builds a signed [version] bundle whose prompts/messages differ from the
     /// bundled defaults, using the real maintainer signing key.

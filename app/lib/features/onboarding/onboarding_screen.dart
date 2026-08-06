@@ -73,7 +73,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('Pilgrim', style: theme.textTheme.displaySmall),
+              Text('mic', style: theme.textTheme.displaySmall),
               const SizedBox(height: 8),
               Text(
                 'A quiet companion for reading your Bible.\n'

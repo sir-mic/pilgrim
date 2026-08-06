@@ -78,6 +78,8 @@ class _TodayBody extends ConsumerWidget {
             _PlanFinished(planTitle: reading.plan.title)
           else if (reading.todaysSession != null)
             _CompletedToday(session: reading.todaysSession!)
+          else if (reading.hasInProgress)
+            _ResumeReading(reading: reading)
           else
             _ReadingPrompt(reading: reading),
         ],
@@ -118,6 +120,104 @@ class _ReadingPrompt extends StatelessWidget {
         ),
       ],
     );
+  }
+}
+
+class _ResumeReading extends ConsumerWidget {
+  const _ResumeReading({required this.reading});
+
+  final CurrentReading reading;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final theme = Theme.of(context);
+    final day = reading.day!;
+    final finished = reading.inProgressDone.length;
+    final total = day.readings.length;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text('You\'re partway through', style: theme.textTheme.labelSmall),
+        const SizedBox(height: 16),
+        for (var i = 0; i < day.readings.length; i++) ...[
+          Row(
+            children: [
+              Icon(
+                reading.inProgressDone.contains(i)
+                    ? Icons.check_circle
+                    : Icons.radio_button_unchecked,
+                size: 18,
+                color: reading.inProgressDone.contains(i)
+                    ? theme.colorScheme.primary
+                    : theme.colorScheme.outline,
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Text(
+                  day.readings[i].display(),
+                  style: theme.textTheme.titleMedium?.copyWith(
+                    color: reading.inProgressDone.contains(i)
+                        ? theme.colorScheme.onSurfaceVariant
+                        : theme.colorScheme.onSurface,
+                    decoration: reading.inProgressDone.contains(i)
+                        ? TextDecoration.lineThrough
+                        : null,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 10),
+        ],
+        const SizedBox(height: 16),
+        Text(
+          '$finished of $total finished. Rest is good.',
+          style: theme.textTheme.bodyMedium
+              ?.copyWith(color: theme.colorScheme.onSurfaceVariant),
+        ),
+        const SizedBox(height: 36),
+        PrimaryButton(
+          label: 'Continue reading',
+          onPressed: () => Navigator.of(context).push(
+            fadeRoute(ReadingFlowScreen(reading: reading, resume: true)),
+          ),
+        ),
+        const SizedBox(height: 12),
+        GhostButton(
+          label: 'Start today over',
+          onPressed: () => _startTodayOver(context, ref),
+        ),
+      ],
+    );
+  }
+
+  Future<void> _startTodayOver(BuildContext context, WidgetRef ref) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Start today over?'),
+        content: const Text(
+            'This clears today\'s progress and returns you to the first '
+            'reading. Your journal entries are kept.'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            child: const Text('Start over'),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true) return;
+    await ref.read(appRepositoryProvider).clearReadingProgress(
+          reading.plan.slug,
+          DateTime.parse(reading.progressDate),
+        );
+    ref.invalidate(currentReadingProvider);
   }
 }
 

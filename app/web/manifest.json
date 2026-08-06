@@ -1,11 +1,11 @@
 {
-    "name": "Pilgrim",
-    "short_name": "Pilgrim",
+    "name": "mic",
+    "short_name": "mic",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#000000",
     "theme_color": "#000000",
-    "description": "Pilgrim — a quiet companion for reading your Bible.",
+    "description": "mic — a quiet companion for reading your Bible.",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [

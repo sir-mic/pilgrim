@@ -16,9 +16,17 @@ enum _Step { pray, read, reflect }
 /// A reading cannot be completed immediately — it passes through a quiet
 /// pause, then a reflection prompt. Nothing is graded or analyzed.
 class ReadingFlowScreen extends ConsumerStatefulWidget {
-  const ReadingFlowScreen({super.key, required this.reading});
+  const ReadingFlowScreen({
+    super.key,
+    required this.reading,
+    this.resume = false,
+  });
 
   final CurrentReading reading;
+
+  /// Whether this session resumes a reading already in progress (skips the
+  /// prayer pause — you already prayed).
+  final bool resume;
 
   @override
   ConsumerState<ReadingFlowScreen> createState() => _ReadingFlowScreenState();
@@ -31,6 +39,7 @@ class _ReadingFlowScreenState extends ConsumerState<ReadingFlowScreen> {
   int _countdown = _prayerSeconds;
   Timer? _timer;
   late Future<String> _prompt;
+  late List<int> _done;
   final TextEditingController _reflection = TextEditingController();
   final TextEditingController _prayer = TextEditingController();
   String? _mood;
@@ -38,7 +47,12 @@ class _ReadingFlowScreenState extends ConsumerState<ReadingFlowScreen> {
   @override
   void initState() {
     super.initState();
-    _startTimer();
+    _done = [...widget.reading.inProgressDone];
+    if (widget.resume) {
+      _step = _Step.read;
+    } else {
+      _startTimer();
+    }
     _prompt = ref.read(randomPromptProvider.future);
   }
 
@@ -67,13 +81,43 @@ class _ReadingFlowScreenState extends ConsumerState<ReadingFlowScreen> {
   }
 
   void _advance() {
+    setState(() => _step = _Step.read);
+  }
+
+  void _continueToReflect() {
+    _timer?.cancel();
+    setState(() => _step = _Step.reflect);
+  }
+
+  /// Persists which readings are marked done. Called on every toggle so a
+  /// break (even a force-quit) never loses progress.
+  Future<void> _persist() async {
+    final reading = widget.reading;
+    await ref.read(appRepositoryProvider).setReadingProgress(
+          planSlug: reading.plan.slug,
+          date: DateTime.parse(reading.progressDate),
+          dayIndex: reading.currentDay,
+          done: [..._done],
+        );
+  }
+
+  void _toggleReading(int index) {
     setState(() {
-      if (_step == _Step.pray) {
-        _step = _Step.read;
-      } else if (_step == _Step.read) {
-        _step = _Step.reflect;
+      if (_done.contains(index)) {
+        _done.remove(index);
+      } else {
+        _done.add(index);
       }
+      _done.sort();
     });
+    _persist();
+  }
+
+  Future<void> _takeBreak() async {
+    await _persist();
+    if (!mounted) return;
+    ref.invalidate(currentReadingProvider);
+    Navigator.of(context).pop();
   }
 
   Future<void> _complete() async {
@@ -90,6 +134,7 @@ class _ReadingFlowScreenState extends ConsumerState<ReadingFlowScreen> {
           mood: _mood,
           readings: day.readings,
         );
+    ref.invalidate(currentReadingProvider);
 
     if (!mounted) return;
     if (reading.currentDay >= reading.plan.totalDays) {
@@ -171,28 +216,52 @@ class _ReadingFlowScreenState extends ConsumerState<ReadingFlowScreen> {
   Widget _buildRead() {
     final theme = Theme.of(context);
     final day = widget.reading.day!;
+    final total = day.readings.length;
+    final finished = _done.length;
     return Padding(
       key: const ValueKey('read'),
       padding: const EdgeInsets.symmetric(horizontal: 28),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text('Open your Bible.', style: theme.textTheme.displaySmall),
-          const SizedBox(height: 24),
-          for (final r in day.readings) ...[
-            Text(r.display(), style: theme.textTheme.headlineLarge),
-            const SizedBox(height: 8),
+      child: SingleChildScrollView(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const SizedBox(height: 48),
+            Text('Open your Bible.', style: theme.textTheme.displaySmall),
+            const SizedBox(height: 12),
+            Text(
+              'Read slowly. Mark each reading as you finish it.',
+              style: theme.textTheme.bodyLarge
+                  ?.copyWith(color: theme.colorScheme.onSurfaceVariant),
+            ),
+            const SizedBox(height: 32),
+            for (var i = 0; i < day.readings.length; i++) ...[
+              _ReadingTile(
+                label: day.readings[i].display(),
+                done: _done.contains(i),
+                onTap: () => _toggleReading(i),
+              ),
+              const SizedBox(height: 8),
+            ],
+            const SizedBox(height: 32),
+            Text(
+              '$finished of $total finished',
+              style: theme.textTheme.labelMedium
+                  ?.copyWith(color: theme.colorScheme.onSurfaceVariant),
+            ),
+            const SizedBox(height: 24),
+            PrimaryButton(
+              label: 'Continue',
+              onPressed: finished == total ? _continueToReflect : null,
+            ),
+            const SizedBox(height: 12),
+            GhostButton(
+              label: 'Take a break',
+              onPressed: _takeBreak,
+            ),
+            const SizedBox(height: 48),
           ],
-          const SizedBox(height: 32),
-          Text(
-            'Read slowly. When you have finished, continue.',
-            style: theme.textTheme.bodyLarge
-                ?.copyWith(color: theme.colorScheme.onSurfaceVariant),
-          ),
-          const SizedBox(height: 48),
-          PrimaryButton(label: 'I\'ve finished reading', onPressed: _advance),
-        ],
+        ),
       ),
     );
   }
@@ -304,6 +373,62 @@ class _MoodChip extends StatelessWidget {
           style: Theme.of(context).textTheme.labelMedium?.copyWith(
                 color: selected ? scheme.primary : scheme.onSurfaceVariant,
               ),
+        ),
+      ),
+    );
+  }
+}
+
+class _ReadingTile extends StatelessWidget {
+  const _ReadingTile({
+    required this.label,
+    required this.done,
+    required this.onTap,
+  });
+
+  final String label;
+  final bool done;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final scheme = theme.colorScheme;
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(16),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        decoration: BoxDecoration(
+          color: done
+              ? scheme.primary.withValues(alpha: 0.10)
+              : scheme.surfaceContainerHighest,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(
+            color: done ? scheme.primary : scheme.outline,
+          ),
+        ),
+        child: Row(
+          children: [
+            Expanded(
+              child: Text(
+                label,
+                style: theme.textTheme.titleMedium?.copyWith(
+                  color: done
+                      ? scheme.onSurfaceVariant
+                      : scheme.onSurface,
+                  decoration: done ? TextDecoration.lineThrough : null,
+                ),
+              ),
+            ),
+            const SizedBox(width: 12),
+            Icon(
+              done ? Icons.check_circle : Icons.radio_button_unchecked,
+              color: done ? scheme.primary : scheme.outline,
+              size: 24,
+            ),
+          ],
         ),
       ),
     );

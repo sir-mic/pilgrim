@@ -11,12 +11,12 @@ import 'features/onboarding/onboarding_screen.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await NotificationService.instance.init();
-  runApp(const ProviderScope(child: PilgrimApp()));
+  runApp(const ProviderScope(child: MicApp()));
 }
 
 /// A quiet companion for reading the Bible.
-class PilgrimApp extends ConsumerWidget {
-  const PilgrimApp({super.key});
+class MicApp extends ConsumerWidget {
+  const MicApp({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -24,7 +24,7 @@ class PilgrimApp extends ConsumerWidget {
     final bootstrap = ref.watch(_bootstrapProvider);
 
     return MaterialApp(
-      title: 'Pilgrim',
+      title: 'mic',
       debugShowCheckedModeBanner: false,
       theme: pilgrimTheme(Brightness.light),
       darkTheme: pilgrimTheme(Brightness.dark),
@@ -72,7 +72,7 @@ class _Splash extends StatelessWidget {
     return Scaffold(
       body: Center(
         child: Text(
-          'Pilgrim',
+          'mic',
           style: Theme.of(context).textTheme.displaySmall,
         ),
       ),
@@ -96,7 +96,7 @@ class _FatalError extends StatelessWidget {
               Text('Something went wrong', style: theme.textTheme.headlineMedium),
               const SizedBox(height: 12),
               Text(
-                'Please restart Pilgrim.',
+                'Please restart mic.',
                 style: theme.textTheme.bodyLarge
                     ?.copyWith(color: theme.colorScheme.onSurfaceVariant),
               ),

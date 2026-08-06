@@ -29,6 +29,21 @@ class SessionEntry {
   final DateTime completedAt;
 }
 
+/// A single day's partial reading progress (which readings are marked done).
+class ReadingProgressEntry {
+  const ReadingProgressEntry({
+    required this.planSlug,
+    required this.date,
+    required this.dayIndex,
+    required this.done,
+  });
+
+  final String planSlug;
+  final String date;
+  final int dayIndex;
+  final List<int> done;
+}
+
 /// Everything the home screen needs to render today's reading.
 class CurrentReading {
   const CurrentReading({
@@ -36,6 +51,8 @@ class CurrentReading {
     required this.currentDay,
     required this.completedCount,
     this.todaysSession,
+    this.inProgressDone = const [],
+    required this.progressDate,
   });
 
   final PlanDefinition plan;
@@ -48,7 +65,15 @@ class CurrentReading {
 
   final SessionEntry? todaysSession;
 
+  /// Indices (into today's `day.readings`) already marked done today.
+  final List<int> inProgressDone;
+
+  /// `yyyy-MM-dd` key identifying "today" for partial reading progress.
+  final String progressDate;
+
   bool get planFinished => currentDay > plan.totalDays;
+
+  bool get hasInProgress => inProgressDone.isNotEmpty;
 
   PlanDay? get day => planFinished ? null : plan.days[currentDay - 1];
 

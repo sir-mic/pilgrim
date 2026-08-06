@@ -2098,6 +2098,318 @@ class SettingsTableCompanion extends UpdateCompanion<SettingsTableData> {
   }
 }
 
+class $ReadingProgressTable extends ReadingProgress
+    with TableInfo<$ReadingProgressTable, ReadingProgressData> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $ReadingProgressTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _planSlugMeta = const VerificationMeta(
+    'planSlug',
+  );
+  @override
+  late final GeneratedColumn<String> planSlug = GeneratedColumn<String>(
+    'plan_slug',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _dateMeta = const VerificationMeta('date');
+  @override
+  late final GeneratedColumn<String> date = GeneratedColumn<String>(
+    'date',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _dayIndexMeta = const VerificationMeta(
+    'dayIndex',
+  );
+  @override
+  late final GeneratedColumn<int> dayIndex = GeneratedColumn<int>(
+    'day_index',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _doneMeta = const VerificationMeta('done');
+  @override
+  late final GeneratedColumn<String> done = GeneratedColumn<String>(
+    'done',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [planSlug, date, dayIndex, done];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'reading_progress';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<ReadingProgressData> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('plan_slug')) {
+      context.handle(
+        _planSlugMeta,
+        planSlug.isAcceptableOrUnknown(data['plan_slug']!, _planSlugMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_planSlugMeta);
+    }
+    if (data.containsKey('date')) {
+      context.handle(
+        _dateMeta,
+        date.isAcceptableOrUnknown(data['date']!, _dateMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_dateMeta);
+    }
+    if (data.containsKey('day_index')) {
+      context.handle(
+        _dayIndexMeta,
+        dayIndex.isAcceptableOrUnknown(data['day_index']!, _dayIndexMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_dayIndexMeta);
+    }
+    if (data.containsKey('done')) {
+      context.handle(
+        _doneMeta,
+        done.isAcceptableOrUnknown(data['done']!, _doneMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_doneMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {planSlug, date};
+  @override
+  ReadingProgressData map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return ReadingProgressData(
+      planSlug: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}plan_slug'],
+      )!,
+      date: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}date'],
+      )!,
+      dayIndex: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}day_index'],
+      )!,
+      done: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}done'],
+      )!,
+    );
+  }
+
+  @override
+  $ReadingProgressTable createAlias(String alias) {
+    return $ReadingProgressTable(attachedDatabase, alias);
+  }
+}
+
+class ReadingProgressData extends DataClass
+    implements Insertable<ReadingProgressData> {
+  final String planSlug;
+  final String date;
+  final int dayIndex;
+  final String done;
+  const ReadingProgressData({
+    required this.planSlug,
+    required this.date,
+    required this.dayIndex,
+    required this.done,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['plan_slug'] = Variable<String>(planSlug);
+    map['date'] = Variable<String>(date);
+    map['day_index'] = Variable<int>(dayIndex);
+    map['done'] = Variable<String>(done);
+    return map;
+  }
+
+  ReadingProgressCompanion toCompanion(bool nullToAbsent) {
+    return ReadingProgressCompanion(
+      planSlug: Value(planSlug),
+      date: Value(date),
+      dayIndex: Value(dayIndex),
+      done: Value(done),
+    );
+  }
+
+  factory ReadingProgressData.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return ReadingProgressData(
+      planSlug: serializer.fromJson<String>(json['planSlug']),
+      date: serializer.fromJson<String>(json['date']),
+      dayIndex: serializer.fromJson<int>(json['dayIndex']),
+      done: serializer.fromJson<String>(json['done']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'planSlug': serializer.toJson<String>(planSlug),
+      'date': serializer.toJson<String>(date),
+      'dayIndex': serializer.toJson<int>(dayIndex),
+      'done': serializer.toJson<String>(done),
+    };
+  }
+
+  ReadingProgressData copyWith({
+    String? planSlug,
+    String? date,
+    int? dayIndex,
+    String? done,
+  }) => ReadingProgressData(
+    planSlug: planSlug ?? this.planSlug,
+    date: date ?? this.date,
+    dayIndex: dayIndex ?? this.dayIndex,
+    done: done ?? this.done,
+  );
+  ReadingProgressData copyWithCompanion(ReadingProgressCompanion data) {
+    return ReadingProgressData(
+      planSlug: data.planSlug.present ? data.planSlug.value : this.planSlug,
+      date: data.date.present ? data.date.value : this.date,
+      dayIndex: data.dayIndex.present ? data.dayIndex.value : this.dayIndex,
+      done: data.done.present ? data.done.value : this.done,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('ReadingProgressData(')
+          ..write('planSlug: $planSlug, ')
+          ..write('date: $date, ')
+          ..write('dayIndex: $dayIndex, ')
+          ..write('done: $done')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(planSlug, date, dayIndex, done);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is ReadingProgressData &&
+          other.planSlug == this.planSlug &&
+          other.date == this.date &&
+          other.dayIndex == this.dayIndex &&
+          other.done == this.done);
+}
+
+class ReadingProgressCompanion extends UpdateCompanion<ReadingProgressData> {
+  final Value<String> planSlug;
+  final Value<String> date;
+  final Value<int> dayIndex;
+  final Value<String> done;
+  final Value<int> rowid;
+  const ReadingProgressCompanion({
+    this.planSlug = const Value.absent(),
+    this.date = const Value.absent(),
+    this.dayIndex = const Value.absent(),
+    this.done = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  ReadingProgressCompanion.insert({
+    required String planSlug,
+    required String date,
+    required int dayIndex,
+    required String done,
+    this.rowid = const Value.absent(),
+  }) : planSlug = Value(planSlug),
+       date = Value(date),
+       dayIndex = Value(dayIndex),
+       done = Value(done);
+  static Insertable<ReadingProgressData> custom({
+    Expression<String>? planSlug,
+    Expression<String>? date,
+    Expression<int>? dayIndex,
+    Expression<String>? done,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (planSlug != null) 'plan_slug': planSlug,
+      if (date != null) 'date': date,
+      if (dayIndex != null) 'day_index': dayIndex,
+      if (done != null) 'done': done,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  ReadingProgressCompanion copyWith({
+    Value<String>? planSlug,
+    Value<String>? date,
+    Value<int>? dayIndex,
+    Value<String>? done,
+    Value<int>? rowid,
+  }) {
+    return ReadingProgressCompanion(
+      planSlug: planSlug ?? this.planSlug,
+      date: date ?? this.date,
+      dayIndex: dayIndex ?? this.dayIndex,
+      done: done ?? this.done,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (planSlug.present) {
+      map['plan_slug'] = Variable<String>(planSlug.value);
+    }
+    if (date.present) {
+      map['date'] = Variable<String>(date.value);
+    }
+    if (dayIndex.present) {
+      map['day_index'] = Variable<int>(dayIndex.value);
+    }
+    if (done.present) {
+      map['done'] = Variable<String>(done.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('ReadingProgressCompanion(')
+          ..write('planSlug: $planSlug, ')
+          ..write('date: $date, ')
+          ..write('dayIndex: $dayIndex, ')
+          ..write('done: $done, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
@@ -2110,6 +2422,9 @@ abstract class _$AppDatabase extends GeneratedDatabase {
       $NotificationMessagesTable(this);
   late final $SessionsTable sessions = $SessionsTable(this);
   late final $SettingsTableTable settingsTable = $SettingsTableTable(this);
+  late final $ReadingProgressTable readingProgress = $ReadingProgressTable(
+    this,
+  );
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -2122,6 +2437,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     notificationMessages,
     sessions,
     settingsTable,
+    readingProgress,
   ];
 }
 
@@ -3583,6 +3899,197 @@ typedef $$SettingsTableTableProcessedTableManager =
       SettingsTableData,
       PrefetchHooks Function()
     >;
+typedef $$ReadingProgressTableCreateCompanionBuilder =
+    ReadingProgressCompanion Function({
+      required String planSlug,
+      required String date,
+      required int dayIndex,
+      required String done,
+      Value<int> rowid,
+    });
+typedef $$ReadingProgressTableUpdateCompanionBuilder =
+    ReadingProgressCompanion Function({
+      Value<String> planSlug,
+      Value<String> date,
+      Value<int> dayIndex,
+      Value<String> done,
+      Value<int> rowid,
+    });
+
+class $$ReadingProgressTableFilterComposer
+    extends Composer<_$AppDatabase, $ReadingProgressTable> {
+  $$ReadingProgressTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get planSlug => $composableBuilder(
+    column: $table.planSlug,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get date => $composableBuilder(
+    column: $table.date,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get dayIndex => $composableBuilder(
+    column: $table.dayIndex,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get done => $composableBuilder(
+    column: $table.done,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$ReadingProgressTableOrderingComposer
+    extends Composer<_$AppDatabase, $ReadingProgressTable> {
+  $$ReadingProgressTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get planSlug => $composableBuilder(
+    column: $table.planSlug,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get date => $composableBuilder(
+    column: $table.date,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get dayIndex => $composableBuilder(
+    column: $table.dayIndex,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get done => $composableBuilder(
+    column: $table.done,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$ReadingProgressTableAnnotationComposer
+    extends Composer<_$AppDatabase, $ReadingProgressTable> {
+  $$ReadingProgressTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get planSlug =>
+      $composableBuilder(column: $table.planSlug, builder: (column) => column);
+
+  GeneratedColumn<String> get date =>
+      $composableBuilder(column: $table.date, builder: (column) => column);
+
+  GeneratedColumn<int> get dayIndex =>
+      $composableBuilder(column: $table.dayIndex, builder: (column) => column);
+
+  GeneratedColumn<String> get done =>
+      $composableBuilder(column: $table.done, builder: (column) => column);
+}
+
+class $$ReadingProgressTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $ReadingProgressTable,
+          ReadingProgressData,
+          $$ReadingProgressTableFilterComposer,
+          $$ReadingProgressTableOrderingComposer,
+          $$ReadingProgressTableAnnotationComposer,
+          $$ReadingProgressTableCreateCompanionBuilder,
+          $$ReadingProgressTableUpdateCompanionBuilder,
+          (
+            ReadingProgressData,
+            BaseReferences<
+              _$AppDatabase,
+              $ReadingProgressTable,
+              ReadingProgressData
+            >,
+          ),
+          ReadingProgressData,
+          PrefetchHooks Function()
+        > {
+  $$ReadingProgressTableTableManager(
+    _$AppDatabase db,
+    $ReadingProgressTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$ReadingProgressTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$ReadingProgressTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$ReadingProgressTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> planSlug = const Value.absent(),
+                Value<String> date = const Value.absent(),
+                Value<int> dayIndex = const Value.absent(),
+                Value<String> done = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => ReadingProgressCompanion(
+                planSlug: planSlug,
+                date: date,
+                dayIndex: dayIndex,
+                done: done,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String planSlug,
+                required String date,
+                required int dayIndex,
+                required String done,
+                Value<int> rowid = const Value.absent(),
+              }) => ReadingProgressCompanion.insert(
+                planSlug: planSlug,
+                date: date,
+                dayIndex: dayIndex,
+                done: done,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$ReadingProgressTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $ReadingProgressTable,
+      ReadingProgressData,
+      $$ReadingProgressTableFilterComposer,
+      $$ReadingProgressTableOrderingComposer,
+      $$ReadingProgressTableAnnotationComposer,
+      $$ReadingProgressTableCreateCompanionBuilder,
+      $$ReadingProgressTableUpdateCompanionBuilder,
+      (
+        ReadingProgressData,
+        BaseReferences<
+          _$AppDatabase,
+          $ReadingProgressTable,
+          ReadingProgressData
+        >,
+      ),
+      ReadingProgressData,
+      PrefetchHooks Function()
+    >;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
@@ -3601,4 +4108,6 @@ class $AppDatabaseManager {
       $$SessionsTableTableManager(_db, _db.sessions);
   $$SettingsTableTableTableManager get settingsTable =>
       $$SettingsTableTableTableManager(_db, _db.settingsTable);
+  $$ReadingProgressTableTableManager get readingProgress =>
+      $$ReadingProgressTableTableManager(_db, _db.readingProgress);
 }
