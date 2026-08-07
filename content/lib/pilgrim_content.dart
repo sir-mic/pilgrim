@@ -9,3 +9,4 @@ export 'src/mcheyne_parser.dart';
 export 'src/models.dart';
 export 'src/signing.dart';
 export 'src/validation.dart';
+export 'src/verse_library.dart';

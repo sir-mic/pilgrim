@@ -22,6 +22,9 @@ class AppRepository {
   static const keyReminderMinute = 'reminderMinute';
   static const keyThemeMode = 'themeMode';
   static const keyManifestUrl = 'manifestUrl';
+  static const keyMicDropEnabled = 'micdropEnabled';
+  static const keyMicDropIntervalHours = 'micdropIntervalHours';
+  static const keyMicDropCategories = 'micdropCategories';
 
   Future<String?> getSetting(String key) async {
     final row = await (_db.select(_db.settingsTable)
@@ -53,6 +56,45 @@ class AppRepository {
       await getSetting(keyReminderEnabled) == '1';
 
   Future<String?> manifestUrl() => getSetting(keyManifestUrl);
+
+  // ------------------------------------------------------------- mic drop
+
+  Future<bool> micDropEnabled() async =>
+      await getSetting(keyMicDropEnabled) == '1';
+
+  Future<int?> micDropIntervalHours() async =>
+      int.tryParse(await getSetting(keyMicDropIntervalHours) ?? '');
+
+  /// The enabled mic drop categories, or null when the user has never chosen
+  /// (meaning: every category available in the content is fair game).
+  Future<List<String>?> micDropCategories() async {
+    final raw = await getSetting(keyMicDropCategories);
+    if (raw == null || raw.isEmpty) return null;
+    return (jsonDecode(raw) as List<dynamic>).cast<String>();
+  }
+
+  Future<void> setMicDropEnabled(bool enabled) =>
+      setSetting(keyMicDropEnabled, enabled ? '1' : '0');
+
+  Future<void> setMicDropIntervalHours(int hours) =>
+      setSetting(keyMicDropIntervalHours, '$hours');
+
+  Future<void> setMicDropCategories(List<String> categories) =>
+      setSetting(keyMicDropCategories, jsonEncode(categories));
+
+  Future<void> clearMicDropCategories() => setSetting(keyMicDropCategories, '');
+
+  /// Every mic drop verse currently in the local content.
+  Future<List<VerseNudge>> allMicDropVerses() async {
+    final rows = await _db.select(_db.micDropVerses).get();
+    return rows
+        .map((r) => VerseNudge(
+              category: r.category,
+              text: r.verseText,
+              reference: r.reference,
+            ))
+        .toList();
+  }
 
   // ------------------------------------------------------------------- plans
 

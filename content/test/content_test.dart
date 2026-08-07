@@ -87,6 +87,64 @@ void main() {
     });
   });
 
+  group('verse library', () {
+    test('is generous: at least 8 verses per category', () {
+      expect(verseLibrary.length, greaterThanOrEqualTo(10),
+          reason: 'wanted a broad set of "usual" categories');
+      for (final entry in verseLibrary.entries) {
+        expect(entry.value.length, greaterThanOrEqualTo(8),
+            reason: 'category ${entry.key} needs a deep pool');
+      }
+    });
+
+    test('every verse has text and a reference', () {
+      for (final entry in verseLibrary.entries) {
+        for (final verse in entry.value) {
+          expect(verse.text.trim(), isNotEmpty, reason: entry.key);
+          expect(verse.reference.trim(), isNotEmpty, reason: entry.key);
+        }
+      }
+    });
+
+    test('flattens to a validating bundle list', () {
+      final nudges = buildDefaultVerseNudges();
+      expect(nudges, isNotEmpty);
+      final categories = nudges.map((v) => v.category).toSet();
+      expect(categories, verseLibrary.keys.toSet());
+      expect(() => validateBundle(BundleContent(
+            plans: const [],
+            reflectionPrompts: ['p'],
+            notificationMessages: ['n'],
+            verseNudges: nudges,
+          )),
+          returnsNormally);
+    });
+
+    test('verseNudges round-trip through JSON', () {
+      final nudge = const VerseNudge(
+        category: 'hope',
+        text: 'And in his word do I hope.',
+        reference: 'Psalm 130:5',
+      );
+      expect(
+        VerseNudge.fromJson(nudge.toJson()),
+        isA<VerseNudge>()
+            .having((v) => v.category, 'category', 'hope')
+            .having((v) => v.text, 'text', nudge.text)
+            .having((v) => v.reference, 'reference', nudge.reference),
+      );
+    });
+
+    test('BundleContent tolerates bundles without verseNudges', () {
+      final content = BundleContent.fromJson(const {
+        'plans': [],
+        'reflectionPrompts': ['p'],
+        'notificationMessages': ['n'],
+      });
+      expect(content.verseNudges, isEmpty);
+    });
+  });
+
   group('signing round-trip', () {
     test('signs and verifies', () async {
       final pair = await Ed25519().newKeyPair();
@@ -227,5 +285,8 @@ BundleContent _validContent() {
     ],
     reflectionPrompts: ['p'],
     notificationMessages: ['n'],
+    verseNudges: const [
+      VerseNudge(category: 'hope', text: 't', reference: 'Psalm 1:1'),
+    ],
   );
 }

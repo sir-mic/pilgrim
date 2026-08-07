@@ -138,17 +138,47 @@ class PlanDefinition {
       };
 }
 
+/// One Bible verse for the mic drop notifications, tagged with its [category]
+/// (e.g. "hope", "temptation", "peace").
+class VerseNudge {
+  const VerseNudge({
+    required this.category,
+    required this.text,
+    required this.reference,
+  });
+
+  final String category;
+  final String text;
+  final String reference;
+
+  factory VerseNudge.fromJson(Map<String, dynamic> json) => VerseNudge(
+        category: json['category'] as String,
+        text: json['text'] as String,
+        reference: json['reference'] as String,
+      );
+
+  Map<String, dynamic> toJson() => {
+        'category': category,
+        'text': text,
+        'reference': reference,
+      };
+}
+
 /// The editorial content carried in a signed bundle.
 class BundleContent {
   const BundleContent({
     required this.plans,
     required this.reflectionPrompts,
     required this.notificationMessages,
+    this.verseNudges = const [],
   });
 
   final List<PlanDefinition> plans;
   final List<String> reflectionPrompts;
   final List<String> notificationMessages;
+
+  /// Bible verses for the mic drop notifications. Absent in older bundles.
+  final List<VerseNudge> verseNudges;
 
   factory BundleContent.fromJson(Map<String, dynamic> json) => BundleContent(
         plans: (json['plans'] as List<dynamic>)
@@ -158,12 +188,16 @@ class BundleContent {
             .cast<String>(),
         notificationMessages: (json['notificationMessages'] as List<dynamic>)
             .cast<String>(),
+        verseNudges: (json['verseNudges'] as List<dynamic>? ?? const [])
+            .map((e) => VerseNudge.fromJson(e as Map<String, dynamic>))
+            .toList(),
       );
 
   Map<String, dynamic> toJson() => {
         'plans': plans.map((p) => p.toJson()).toList(),
         'reflectionPrompts': reflectionPrompts,
         'notificationMessages': notificationMessages,
+        'verseNudges': verseNudges.map((v) => v.toJson()).toList(),
       };
 }
 

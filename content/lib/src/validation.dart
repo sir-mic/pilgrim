@@ -26,6 +26,26 @@ void validateBundle(BundleContent content) {
   if (content.notificationMessages.isEmpty) {
     messages.add('notificationMessages must not be empty');
   }
+  if (content.verseNudges.isEmpty) {
+    messages.add('verseNudges must not be empty');
+  }
+
+  final verseCategories = <String>{};
+  for (final verse in content.verseNudges) {
+    if (verse.text.trim().isEmpty) {
+      messages.add('verseNudges contains an empty verse text');
+    }
+    if (verse.reference.trim().isEmpty) {
+      messages.add('verseNudges contains a verse with no reference');
+    }
+    if (verse.category.trim().isEmpty) {
+      messages.add('verseNudges contains a verse with no category');
+    }
+    verseCategories.add(verse.category);
+  }
+  if (verseCategories.isEmpty && content.verseNudges.isNotEmpty) {
+    messages.add('verseNudges have no usable categories');
+  }
 
   final slugs = <String>{};
   for (final plan in content.plans) {

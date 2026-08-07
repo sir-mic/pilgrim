@@ -224,43 +224,97 @@ void main() {
     });
   });
 
-  group('remote refresh', () {
-    /// Builds a signed [version] bundle whose prompts/messages differ from the
-    /// bundled defaults, using the real maintainer signing key.
-    Future<SignedBundle> signed(int version, {String? prompt}) async {
-      final v1 =
-          SignedBundle.decode(File('assets/content/content.json').readAsStringSync());
-      final pem = File('../content/keys/private_key.pem').readAsStringSync();
-      final content = BundleContent(
-        plans: v1.content.plans,
-        reflectionPrompts: [prompt ?? 'Remote prompt v$version.'],
-        notificationMessages: ['Remote message v$version.'],
+  /// Builds a signed [version] bundle whose prompts/messages/verses differ
+  /// from the bundled defaults, using the real maintainer signing key.
+  Future<SignedBundle> signed(int version, {String? prompt}) async {
+    final v1 = SignedBundle.decode(
+        File('assets/content/content.json').readAsStringSync());
+    final pem = File('../content/keys/private_key.pem').readAsStringSync();
+    final content = BundleContent(
+      plans: v1.content.plans,
+      reflectionPrompts: [prompt ?? 'Remote prompt v$version.'],
+      notificationMessages: ['Remote message v$version.'],
+      verseNudges: const [
+        VerseNudge(
+          category: 'hope',
+          text: 'Remote verse text.',
+          reference: 'Romans 15:13',
+        ),
+      ],
+    );
+    final signature = await signBundleFromPem(content, pem);
+    return SignedBundle(
+        version: version, content: content, signature: signature);
+  }
+
+  Future<int?> storedVersion() async {
+    final row = await (db.select(db.contentMeta)
+          ..where((t) => t.id.equals('app')))
+        .getSingleOrNull();
+    return row?.version;
+  }
+
+  group('mic drop', () {
+    test('bundled content seeds verses across categories', () async {
+      await content.reconcile(await loadBundled());
+
+      final verses = await repo.allMicDropVerses();
+      expect(verses.length, greaterThanOrEqualTo(100));
+      final categories = verses.map((v) => v.category).toSet();
+      expect(categories, containsAll(['hope', 'temptation', 'peace']));
+      final hope = verses.where((v) => v.category == 'hope');
+      expect(hope, isNotEmpty);
+      expect(hope.first.text.trim(), isNotEmpty);
+      expect(hope.first.reference.trim(), isNotEmpty);
+    });
+
+    test('settings round-trip', () async {
+      expect(await repo.micDropEnabled(), isFalse);
+      expect(await repo.micDropIntervalHours(), isNull);
+      expect(await repo.micDropCategories(), isNull);
+
+      await repo.setMicDropEnabled(true);
+      await repo.setMicDropIntervalHours(3);
+      await repo.setMicDropCategories(['hope', 'peace']);
+
+      expect(await repo.micDropEnabled(), isTrue);
+      expect(await repo.micDropIntervalHours(), 3);
+      expect(await repo.micDropCategories(), ['hope', 'peace']);
+
+      await repo.clearMicDropCategories();
+      expect(await repo.micDropCategories(), isNull);
+    });
+
+    test('remote bundle replaces the verse pool', () async {
+      await content.reconcile(await loadBundled());
+      expect(await repo.allMicDropVerses(), isNotEmpty);
+
+      final remote = ContentRepository(
+        db,
+        client: _FakeClient((await signed(3)).encode()),
       );
-      final signature = await signBundleFromPem(content, pem);
-      return SignedBundle(
-          version: version, content: content, signature: signature);
-    }
+      await remote.refreshRemote();
 
-    Future<int?> storedVersion() async {
-      final row = await (db.select(db.contentMeta)
-            ..where((t) => t.id.equals('app')))
-          .getSingleOrNull();
-      return row?.version;
-    }
+      final verses = await repo.allMicDropVerses();
+      expect(verses.single.category, 'hope');
+      expect(verses.single.reference, 'Romans 15:13');
+    });
+  });
 
+  group('remote refresh', () {
     test('applies a newer signed bundle', () async {
       await content.reconcile(await loadBundled());
-      expect(await storedVersion(), 1);
+      expect(await storedVersion(), 2);
       expect(await repo.notificationMessages(),
           contains('The Word is waiting.'));
 
-      final v2 = await signed(2);
-      final remote = ContentRepository(db, client: _FakeClient(v2.encode()));
+      final v3 = await signed(3);
+      final remote = ContentRepository(db, client: _FakeClient(v3.encode()));
       await remote.refreshRemote();
 
-      expect(await storedVersion(), 2);
-      expect(await repo.notificationMessages(), ['Remote message v2.']);
-      expect(await repo.randomPrompt(random: Random(1)), 'Remote prompt v2.');
+      expect(await storedVersion(), 3);
+      expect(await repo.notificationMessages(), ['Remote message v3.']);
+      expect(await repo.randomPrompt(random: Random(1)), 'Remote prompt v3.');
     });
 
     test('ignores an older bundle', () async {
@@ -269,26 +323,26 @@ void main() {
       final remote = ContentRepository(db, client: _FakeClient(stale.encode()));
       await remote.refreshRemote();
 
-      expect(await storedVersion(), 1);
+      expect(await storedVersion(), 2);
       expect(await repo.notificationMessages(),
           isNot(contains('Remote message v1.')));
     });
 
     test('ignores a tampered bundle', () async {
       await content.reconcile(await loadBundled());
-      final v2 = await signed(2);
+      final v3 = await signed(3);
       final tampered = SignedBundle(
-        version: v2.version,
-        content: v2.content,
-        signature: 'AAAA${v2.signature.substring(4)}',
+        version: v3.version,
+        content: v3.content,
+        signature: 'AAAA${v3.signature.substring(4)}',
       );
       final remote =
           ContentRepository(db, client: _FakeClient(tampered.encode()));
       await remote.refreshRemote();
 
-      expect(await storedVersion(), 1);
+      expect(await storedVersion(), 2);
       expect(await repo.notificationMessages(),
-          isNot(contains('Remote message v2.')));
+          isNot(contains('Remote message v3.')));
     });
   });
 }

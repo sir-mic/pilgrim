@@ -62,6 +62,10 @@ final randomPromptProvider = FutureProvider<String>(
 final notificationMessagesProvider = FutureProvider<List<String>>(
     (ref) => ref.watch(appRepositoryProvider).notificationMessages());
 
+/// Bible verses for the mic drop notifications, from the current content.
+final micDropVersesProvider = FutureProvider<List<VerseNudge>>(
+    (ref) => ref.watch(appRepositoryProvider).allMicDropVerses());
+
 /// Called once after first frame to silently check for remote content updates.
 final remoteRefreshProvider = FutureProvider<void>((ref) async {
   final repo = ref.watch(contentRepositoryProvider);

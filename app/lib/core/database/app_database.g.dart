@@ -1293,6 +1293,306 @@ class NotificationMessagesCompanion
   }
 }
 
+class $MicDropVersesTable extends MicDropVerses
+    with TableInfo<$MicDropVersesTable, MicDropVerse> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $MicDropVersesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+    'id',
+    aliasedName,
+    false,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'PRIMARY KEY AUTOINCREMENT',
+    ),
+  );
+  static const VerificationMeta _categoryMeta = const VerificationMeta(
+    'category',
+  );
+  @override
+  late final GeneratedColumn<String> category = GeneratedColumn<String>(
+    'category',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _verseTextMeta = const VerificationMeta(
+    'verseText',
+  );
+  @override
+  late final GeneratedColumn<String> verseText = GeneratedColumn<String>(
+    'verse_text',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _referenceMeta = const VerificationMeta(
+    'reference',
+  );
+  @override
+  late final GeneratedColumn<String> reference = GeneratedColumn<String>(
+    'reference',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [id, category, verseText, reference];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'mic_drop_verses';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<MicDropVerse> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('category')) {
+      context.handle(
+        _categoryMeta,
+        category.isAcceptableOrUnknown(data['category']!, _categoryMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_categoryMeta);
+    }
+    if (data.containsKey('verse_text')) {
+      context.handle(
+        _verseTextMeta,
+        verseText.isAcceptableOrUnknown(data['verse_text']!, _verseTextMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_verseTextMeta);
+    }
+    if (data.containsKey('reference')) {
+      context.handle(
+        _referenceMeta,
+        reference.isAcceptableOrUnknown(data['reference']!, _referenceMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_referenceMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  MicDropVerse map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return MicDropVerse(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}id'],
+      )!,
+      category: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}category'],
+      )!,
+      verseText: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}verse_text'],
+      )!,
+      reference: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}reference'],
+      )!,
+    );
+  }
+
+  @override
+  $MicDropVersesTable createAlias(String alias) {
+    return $MicDropVersesTable(attachedDatabase, alias);
+  }
+}
+
+class MicDropVerse extends DataClass implements Insertable<MicDropVerse> {
+  final int id;
+  final String category;
+  final String verseText;
+  final String reference;
+  const MicDropVerse({
+    required this.id,
+    required this.category,
+    required this.verseText,
+    required this.reference,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['category'] = Variable<String>(category);
+    map['verse_text'] = Variable<String>(verseText);
+    map['reference'] = Variable<String>(reference);
+    return map;
+  }
+
+  MicDropVersesCompanion toCompanion(bool nullToAbsent) {
+    return MicDropVersesCompanion(
+      id: Value(id),
+      category: Value(category),
+      verseText: Value(verseText),
+      reference: Value(reference),
+    );
+  }
+
+  factory MicDropVerse.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return MicDropVerse(
+      id: serializer.fromJson<int>(json['id']),
+      category: serializer.fromJson<String>(json['category']),
+      verseText: serializer.fromJson<String>(json['verseText']),
+      reference: serializer.fromJson<String>(json['reference']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'category': serializer.toJson<String>(category),
+      'verseText': serializer.toJson<String>(verseText),
+      'reference': serializer.toJson<String>(reference),
+    };
+  }
+
+  MicDropVerse copyWith({
+    int? id,
+    String? category,
+    String? verseText,
+    String? reference,
+  }) => MicDropVerse(
+    id: id ?? this.id,
+    category: category ?? this.category,
+    verseText: verseText ?? this.verseText,
+    reference: reference ?? this.reference,
+  );
+  MicDropVerse copyWithCompanion(MicDropVersesCompanion data) {
+    return MicDropVerse(
+      id: data.id.present ? data.id.value : this.id,
+      category: data.category.present ? data.category.value : this.category,
+      verseText: data.verseText.present ? data.verseText.value : this.verseText,
+      reference: data.reference.present ? data.reference.value : this.reference,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('MicDropVerse(')
+          ..write('id: $id, ')
+          ..write('category: $category, ')
+          ..write('verseText: $verseText, ')
+          ..write('reference: $reference')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(id, category, verseText, reference);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is MicDropVerse &&
+          other.id == this.id &&
+          other.category == this.category &&
+          other.verseText == this.verseText &&
+          other.reference == this.reference);
+}
+
+class MicDropVersesCompanion extends UpdateCompanion<MicDropVerse> {
+  final Value<int> id;
+  final Value<String> category;
+  final Value<String> verseText;
+  final Value<String> reference;
+  const MicDropVersesCompanion({
+    this.id = const Value.absent(),
+    this.category = const Value.absent(),
+    this.verseText = const Value.absent(),
+    this.reference = const Value.absent(),
+  });
+  MicDropVersesCompanion.insert({
+    this.id = const Value.absent(),
+    required String category,
+    required String verseText,
+    required String reference,
+  }) : category = Value(category),
+       verseText = Value(verseText),
+       reference = Value(reference);
+  static Insertable<MicDropVerse> custom({
+    Expression<int>? id,
+    Expression<String>? category,
+    Expression<String>? verseText,
+    Expression<String>? reference,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (category != null) 'category': category,
+      if (verseText != null) 'verse_text': verseText,
+      if (reference != null) 'reference': reference,
+    });
+  }
+
+  MicDropVersesCompanion copyWith({
+    Value<int>? id,
+    Value<String>? category,
+    Value<String>? verseText,
+    Value<String>? reference,
+  }) {
+    return MicDropVersesCompanion(
+      id: id ?? this.id,
+      category: category ?? this.category,
+      verseText: verseText ?? this.verseText,
+      reference: reference ?? this.reference,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (category.present) {
+      map['category'] = Variable<String>(category.value);
+    }
+    if (verseText.present) {
+      map['verse_text'] = Variable<String>(verseText.value);
+    }
+    if (reference.present) {
+      map['reference'] = Variable<String>(reference.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('MicDropVersesCompanion(')
+          ..write('id: $id, ')
+          ..write('category: $category, ')
+          ..write('verseText: $verseText, ')
+          ..write('reference: $reference')
+          ..write(')'))
+        .toString();
+  }
+}
+
 class $SessionsTable extends Sessions with TableInfo<$SessionsTable, Session> {
   @override
   final GeneratedDatabase attachedDatabase;
@@ -2420,6 +2720,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
       $ReflectionPromptsTable(this);
   late final $NotificationMessagesTable notificationMessages =
       $NotificationMessagesTable(this);
+  late final $MicDropVersesTable micDropVerses = $MicDropVersesTable(this);
   late final $SessionsTable sessions = $SessionsTable(this);
   late final $SettingsTableTable settingsTable = $SettingsTableTable(this);
   late final $ReadingProgressTable readingProgress = $ReadingProgressTable(
@@ -2435,6 +2736,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     planDays,
     reflectionPrompts,
     notificationMessages,
+    micDropVerses,
     sessions,
     settingsTable,
     readingProgress,
@@ -3468,6 +3770,181 @@ typedef $$NotificationMessagesTableProcessedTableManager =
       NotificationMessage,
       PrefetchHooks Function()
     >;
+typedef $$MicDropVersesTableCreateCompanionBuilder =
+    MicDropVersesCompanion Function({
+      Value<int> id,
+      required String category,
+      required String verseText,
+      required String reference,
+    });
+typedef $$MicDropVersesTableUpdateCompanionBuilder =
+    MicDropVersesCompanion Function({
+      Value<int> id,
+      Value<String> category,
+      Value<String> verseText,
+      Value<String> reference,
+    });
+
+class $$MicDropVersesTableFilterComposer
+    extends Composer<_$AppDatabase, $MicDropVersesTable> {
+  $$MicDropVersesTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get category => $composableBuilder(
+    column: $table.category,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get verseText => $composableBuilder(
+    column: $table.verseText,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get reference => $composableBuilder(
+    column: $table.reference,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$MicDropVersesTableOrderingComposer
+    extends Composer<_$AppDatabase, $MicDropVersesTable> {
+  $$MicDropVersesTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get category => $composableBuilder(
+    column: $table.category,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get verseText => $composableBuilder(
+    column: $table.verseText,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get reference => $composableBuilder(
+    column: $table.reference,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$MicDropVersesTableAnnotationComposer
+    extends Composer<_$AppDatabase, $MicDropVersesTable> {
+  $$MicDropVersesTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get category =>
+      $composableBuilder(column: $table.category, builder: (column) => column);
+
+  GeneratedColumn<String> get verseText =>
+      $composableBuilder(column: $table.verseText, builder: (column) => column);
+
+  GeneratedColumn<String> get reference =>
+      $composableBuilder(column: $table.reference, builder: (column) => column);
+}
+
+class $$MicDropVersesTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $MicDropVersesTable,
+          MicDropVerse,
+          $$MicDropVersesTableFilterComposer,
+          $$MicDropVersesTableOrderingComposer,
+          $$MicDropVersesTableAnnotationComposer,
+          $$MicDropVersesTableCreateCompanionBuilder,
+          $$MicDropVersesTableUpdateCompanionBuilder,
+          (
+            MicDropVerse,
+            BaseReferences<_$AppDatabase, $MicDropVersesTable, MicDropVerse>,
+          ),
+          MicDropVerse,
+          PrefetchHooks Function()
+        > {
+  $$MicDropVersesTableTableManager(_$AppDatabase db, $MicDropVersesTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$MicDropVersesTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$MicDropVersesTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$MicDropVersesTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<String> category = const Value.absent(),
+                Value<String> verseText = const Value.absent(),
+                Value<String> reference = const Value.absent(),
+              }) => MicDropVersesCompanion(
+                id: id,
+                category: category,
+                verseText: verseText,
+                reference: reference,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                required String category,
+                required String verseText,
+                required String reference,
+              }) => MicDropVersesCompanion.insert(
+                id: id,
+                category: category,
+                verseText: verseText,
+                reference: reference,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$MicDropVersesTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $MicDropVersesTable,
+      MicDropVerse,
+      $$MicDropVersesTableFilterComposer,
+      $$MicDropVersesTableOrderingComposer,
+      $$MicDropVersesTableAnnotationComposer,
+      $$MicDropVersesTableCreateCompanionBuilder,
+      $$MicDropVersesTableUpdateCompanionBuilder,
+      (
+        MicDropVerse,
+        BaseReferences<_$AppDatabase, $MicDropVersesTable, MicDropVerse>,
+      ),
+      MicDropVerse,
+      PrefetchHooks Function()
+    >;
 typedef $$SessionsTableCreateCompanionBuilder =
     SessionsCompanion Function({
       Value<int> id,
@@ -4104,6 +4581,8 @@ class $AppDatabaseManager {
       $$ReflectionPromptsTableTableManager(_db, _db.reflectionPrompts);
   $$NotificationMessagesTableTableManager get notificationMessages =>
       $$NotificationMessagesTableTableManager(_db, _db.notificationMessages);
+  $$MicDropVersesTableTableManager get micDropVerses =>
+      $$MicDropVersesTableTableManager(_db, _db.micDropVerses);
   $$SessionsTableTableManager get sessions =>
       $$SessionsTableTableManager(_db, _db.sessions);
   $$SettingsTableTableTableManager get settingsTable =>

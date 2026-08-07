@@ -62,6 +62,17 @@ class NotificationMessages extends Table {
   Set<Column> get primaryKey => {message};
 }
 
+/// Bible verses for the mic drop notifications, tagged by category.
+class MicDropVerses extends Table {
+  IntColumn get id => integer().autoIncrement()();
+
+  TextColumn get category => text()();
+
+  TextColumn get verseText => text()();
+
+  TextColumn get reference => text()();
+}
+
 /// Journal entries. Readings are stored as an immutable snapshot at the time
 /// of completion so later content changes can never rewrite history.
 class Sessions extends Table {
@@ -120,6 +131,7 @@ class ReadingProgress extends Table {
     PlanDays,
     ReflectionPrompts,
     NotificationMessages,
+    MicDropVerses,
     Sessions,
     SettingsTable,
     ReadingProgress,
@@ -131,7 +143,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase.forTesting(super.executor);
 
   @override
-  int get schemaVersion => 2;
+  int get schemaVersion => 3;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -139,6 +151,9 @@ class AppDatabase extends _$AppDatabase {
         onUpgrade: (m, from, to) async {
           if (from < 2) {
             await m.createTable(readingProgress);
+          }
+          if (from < 3) {
+            await m.createTable(micDropVerses);
           }
         },
         beforeOpen: (details) async {

@@ -34,7 +34,7 @@ class ContentRepository {
   /// on an older bundle version.
   Future<void> ensureBundledContent() async {
     final current = await _currentVersion();
-    if (current != null && current >= 1) return;
+    if (current != null && current >= 2) return;
 
     final raw = await rootBundle.loadString(bundledAsset);
     final bundle = SignedBundle.decode(raw);
@@ -77,10 +77,10 @@ class ContentRepository {
     return row?.version;
   }
 
-  /// Applies a verified bundle. Plans and days are upserted; prompts and
-  /// notification messages are replaced. User progress and journal entries
-  /// (which reference plans by slug and store immutable snapshots) are never
-  /// touched.
+  /// Applies a verified bundle. Plans and days are upserted; prompts,
+  /// notification messages and mic drop verses are replaced. User progress and
+  /// journal entries (which reference plans by slug and store immutable
+  /// snapshots) are never touched.
   Future<void> reconcile(SignedBundle bundle) {
     return _db.transaction(() async {
       for (final plan in bundle.content.plans) {
@@ -123,6 +123,17 @@ class ContentRepository {
       for (final message in bundle.content.notificationMessages) {
         await _db.into(_db.notificationMessages).insert(
               NotificationMessagesCompanion.insert(message: message),
+            );
+      }
+
+      await _db.delete(_db.micDropVerses).go();
+      for (final verse in bundle.content.verseNudges) {
+        await _db.into(_db.micDropVerses).insert(
+              MicDropVersesCompanion.insert(
+                category: verse.category,
+                verseText: verse.text,
+                reference: verse.reference,
+              ),
             );
       }
 

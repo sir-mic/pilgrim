@@ -1,5 +1,5 @@
 {
-  "version": 1,
+  "version": 2,
   "content": {
     "plans": [
       {
@@ -33521,7 +33521,709 @@
       "Welcome back.",
       "Let's continue.",
       "Begin with prayer."
+    ],
+    "verseNudges": [
+      {
+        "category": "hope",
+        "text": "Now the God of hope fill you with all joy and peace in believing, that ye may abound in hope, through the power of the Holy Ghost.",
+        "reference": "Romans 15:13"
+      },
+      {
+        "category": "hope",
+        "text": "For I know the thoughts that I think toward you, saith the LORD, thoughts of peace, and not of evil, to give you an expected end.",
+        "reference": "Jeremiah 29:11"
+      },
+      {
+        "category": "hope",
+        "text": "Why art thou cast down, O my soul? and why art thou disquieted within me? hope thou in God: for I shall yet praise him, who is the health of my countenance, and my God.",
+        "reference": "Psalm 42:11"
+      },
+      {
+        "category": "hope",
+        "text": "Which hope we have as an anchor of the soul, both sure and stedfast.",
+        "reference": "Hebrews 6:19"
+      },
+      {
+        "category": "hope",
+        "text": "I wait for the LORD, my soul doth wait, and in his word do I hope.",
+        "reference": "Psalm 130:5"
+      },
+      {
+        "category": "hope",
+        "text": "It is of the LORD's mercies that we are not consumed, because his compassions fail not. They are new every morning: great is thy faithfulness.",
+        "reference": "Lamentations 3:22–23"
+      },
+      {
+        "category": "hope",
+        "text": "For surely there is an end; and thine expectation shall not be cut off.",
+        "reference": "Proverbs 23:18"
+      },
+      {
+        "category": "hope",
+        "text": "For we are saved by hope: but hope that is seen is not hope: for what a man seeth, why doth he yet hope for? But if we hope for that we see not, then do we with patience wait for it.",
+        "reference": "Romans 8:24–25"
+      },
+      {
+        "category": "hope",
+        "text": "But I will hope continually, and will yet praise thee more and more.",
+        "reference": "Psalm 71:14"
+      },
+      {
+        "category": "hope",
+        "text": "But they that wait upon the LORD shall renew their strength; they shall mount up with wings as eagles; they shall run, and not be weary; and they shall walk, and not faint.",
+        "reference": "Isaiah 40:31"
+      },
+      {
+        "category": "temptation",
+        "text": "There hath no temptation taken you but such as is common to man: but God is faithful, who will not suffer you to be tempted above that ye are able; but will with the temptation also make a way to escape, that ye may be able to bear it.",
+        "reference": "1 Corinthians 10:13"
+      },
+      {
+        "category": "temptation",
+        "text": "Submit yourselves therefore to God. Resist the devil, and he will flee from you.",
+        "reference": "James 4:7"
+      },
+      {
+        "category": "temptation",
+        "text": "Blessed is the man that endureth temptation: for when he is tried, he shall receive the crown of life, which the Lord hath promised to them that love him.",
+        "reference": "James 1:12"
+      },
+      {
+        "category": "temptation",
+        "text": "Watch and pray, that ye enter not into temptation: the spirit indeed is willing, but the flesh is weak.",
+        "reference": "Matthew 26:41"
+      },
+      {
+        "category": "temptation",
+        "text": "Thy word have I hid in mine heart, that I might not sin against thee.",
+        "reference": "Psalm 119:11"
+      },
+      {
+        "category": "temptation",
+        "text": "Put on the whole armour of God, that ye may be able to stand against the wiles of the devil.",
+        "reference": "Ephesians 6:11"
+      },
+      {
+        "category": "temptation",
+        "text": "Flee also youthful lusts: but follow righteousness, faith, charity, peace, with them that call on the Lord out of a pure heart.",
+        "reference": "2 Timothy 2:22"
+      },
+      {
+        "category": "temptation",
+        "text": "This I say then, Walk in the Spirit, and ye shall not fulfil the lust of the flesh.",
+        "reference": "Galatians 5:16"
+      },
+      {
+        "category": "temptation",
+        "text": "For in that he himself hath suffered being tempted, he is able to succour them that are tempted.",
+        "reference": "Hebrews 2:18"
+      },
+      {
+        "category": "temptation",
+        "text": "Enter not into the path of the wicked, and go not in the way of evil men. Avoid it, pass not by it, turn from it, and pass away.",
+        "reference": "Proverbs 4:14–15"
+      },
+      {
+        "category": "peace",
+        "text": "Peace I leave with you, my peace I give unto you: not as the world giveth, give I unto you. Let not your heart be troubled, neither let it be afraid.",
+        "reference": "John 14:27"
+      },
+      {
+        "category": "peace",
+        "text": "Be careful for nothing; but in every thing by prayer and supplication with thanksgiving let your requests be made known unto God. And the peace of God, which passeth all understanding, shall keep your hearts and minds through Christ Jesus.",
+        "reference": "Philippians 4:6–7"
+      },
+      {
+        "category": "peace",
+        "text": "Be still, and know that I am God: I will be exalted among the heathen, I will be exalted in the earth.",
+        "reference": "Psalm 46:10"
+      },
+      {
+        "category": "peace",
+        "text": "Thou wilt keep him in perfect peace, whose mind is stayed on thee: because he trusteth in thee.",
+        "reference": "Isaiah 26:3"
+      },
+      {
+        "category": "peace",
+        "text": "Come unto me, all ye that labour and are heavy laden, and I will give you rest.",
+        "reference": "Matthew 11:28"
+      },
+      {
+        "category": "peace",
+        "text": "Cast thy burden upon the LORD, and he shall sustain thee: he shall never suffer the righteous to be moved.",
+        "reference": "Psalm 55:22"
+      },
+      {
+        "category": "peace",
+        "text": "Now the Lord of peace himself give you peace always by all means. The Lord be with you all.",
+        "reference": "2 Thessalonians 3:16"
+      },
+      {
+        "category": "peace",
+        "text": "I sought the LORD, and he heard me, and delivered me from all my fears.",
+        "reference": "Psalm 34:4"
+      },
+      {
+        "category": "peace",
+        "text": "Casting all your care upon him; for he careth for you.",
+        "reference": "1 Peter 5:7"
+      },
+      {
+        "category": "peace",
+        "text": "The LORD bless thee, and keep thee: The LORD make his face shine upon thee, and be gracious unto thee: The LORD lift up his countenance upon thee, and give thee peace.",
+        "reference": "Numbers 6:24–26"
+      },
+      {
+        "category": "courage",
+        "text": "Have not I commanded thee? Be strong and of a good courage; be not afraid, neither be thou dismayed: for the LORD thy God is with thee whithersoever thou goest.",
+        "reference": "Joshua 1:9"
+      },
+      {
+        "category": "courage",
+        "text": "Fear thou not; for I am with thee: be not dismayed; for I am thy God: I will strengthen thee; yea, I will help thee; yea, I will uphold thee with the right hand of my righteousness.",
+        "reference": "Isaiah 41:10"
+      },
+      {
+        "category": "courage",
+        "text": "The LORD is my light and my salvation; whom shall I fear? the LORD is the strength of my life; of whom shall I be afraid?",
+        "reference": "Psalm 27:1"
+      },
+      {
+        "category": "courage",
+        "text": "Be strong and of a good courage, fear not, nor be afraid of them: for the LORD thy God, he it is that doth go with thee; he will not fail thee, nor forsake thee.",
+        "reference": "Deuteronomy 31:6"
+      },
+      {
+        "category": "courage",
+        "text": "Yea, though I walk through the valley of the shadow of death, I will fear no evil: for thou art with me; thy rod and thy staff they comfort me.",
+        "reference": "Psalm 23:4"
+      },
+      {
+        "category": "courage",
+        "text": "For God hath not given us the spirit of fear; but of power, and of love, and of a sound mind.",
+        "reference": "2 Timothy 1:7"
+      },
+      {
+        "category": "courage",
+        "text": "What time I am afraid, I will trust in thee.",
+        "reference": "Psalm 56:3"
+      },
+      {
+        "category": "courage",
+        "text": "Yet now be strong, O Zerubbabel, saith the LORD; and be strong, O Joshua, son of Josedech, the high priest; and be strong, all ye people of the land, saith the LORD, and work: for I am with you, saith the LORD of hosts.",
+        "reference": "Haggai 2:4"
+      },
+      {
+        "category": "courage",
+        "text": "Fear not: for I have redeemed thee, I have called thee by thy name; thou art mine. When thou passest through the waters, I will be with thee; and through the rivers, they shall not overflow thee.",
+        "reference": "Isaiah 43:1–2"
+      },
+      {
+        "category": "courage",
+        "text": "The LORD is on my side; I will not fear: what can man do unto me?",
+        "reference": "Psalm 118:6"
+      },
+      {
+        "category": "gratitude",
+        "text": "In every thing give thanks: for this is the will of God in Christ Jesus concerning you.",
+        "reference": "1 Thessalonians 5:18"
+      },
+      {
+        "category": "gratitude",
+        "text": "Enter into his gates with thanksgiving, and into his courts with praise: be thankful unto him, and bless his name.",
+        "reference": "Psalm 100:4"
+      },
+      {
+        "category": "gratitude",
+        "text": "O give thanks unto the LORD, for he is good: for his mercy endureth for ever.",
+        "reference": "Psalm 107:1"
+      },
+      {
+        "category": "gratitude",
+        "text": "Let the peace of God rule in your hearts, to the which also ye are called in one body; and be ye thankful.",
+        "reference": "Colossians 3:15"
+      },
+      {
+        "category": "gratitude",
+        "text": "This is the day which the LORD hath made; we will rejoice and be glad in it.",
+        "reference": "Psalm 118:24"
+      },
+      {
+        "category": "gratitude",
+        "text": "Every good gift and every perfect gift is from above, and cometh down from the Father of lights, with whom is no variableness, neither shadow of turning.",
+        "reference": "James 1:17"
+      },
+      {
+        "category": "gratitude",
+        "text": "Bless the LORD, O my soul, and forget not all his benefits.",
+        "reference": "Psalm 103:2"
+      },
+      {
+        "category": "gratitude",
+        "text": "Giving thanks always for all things unto God and the Father in the name of our Lord Jesus Christ.",
+        "reference": "Ephesians 5:20"
+      },
+      {
+        "category": "gratitude",
+        "text": "Let us come before his presence with thanksgiving, and make a joyful noise unto him with psalms.",
+        "reference": "Psalm 95:2"
+      },
+      {
+        "category": "gratitude",
+        "text": "Thanks be unto God for his unspeakable gift.",
+        "reference": "2 Corinthians 9:15"
+      },
+      {
+        "category": "patience",
+        "text": "Rejoicing in hope; patient in tribulation; continuing instant in prayer.",
+        "reference": "Romans 12:12"
+      },
+      {
+        "category": "patience",
+        "text": "Be patient therefore, brethren, unto the coming of the Lord. Behold, the husbandman waiteth for the precious fruit of the earth, and hath long patience for it. Be ye also patient; stablish your hearts: for the coming of the Lord draweth nigh.",
+        "reference": "James 5:7–8"
+      },
+      {
+        "category": "patience",
+        "text": "Wait on the LORD: be of good courage, and he shall strengthen thine heart: wait, I say, on the LORD.",
+        "reference": "Psalm 27:14"
+      },
+      {
+        "category": "patience",
+        "text": "But if we hope for that we see not, then do we with patience wait for it.",
+        "reference": "Romans 8:25"
+      },
+      {
+        "category": "patience",
+        "text": "For ye have need of patience, that, after ye have done the will of God, ye might receive the promise.",
+        "reference": "Hebrews 10:36"
+      },
+      {
+        "category": "patience",
+        "text": "And let us not be weary in well doing: for in due season we shall reap, if we faint not.",
+        "reference": "Galatians 6:9"
+      },
+      {
+        "category": "patience",
+        "text": "Rest in the LORD, and wait patiently for him: fret not thyself because of him who prospereth in his way.",
+        "reference": "Psalm 37:7"
+      },
+      {
+        "category": "patience",
+        "text": "To every thing there is a season, and a time to every purpose under the heaven.",
+        "reference": "Ecclesiastes 3:1"
+      },
+      {
+        "category": "patience",
+        "text": "It is good that a man should both hope and quietly wait for the salvation of the LORD.",
+        "reference": "Lamentations 3:26"
+      },
+      {
+        "category": "patience",
+        "text": "And not only so, but we glory in tribulations also: knowing that tribulation worketh patience; And patience, experience; and experience, hope.",
+        "reference": "Romans 5:3–4"
+      },
+      {
+        "category": "strength",
+        "text": "I can do all things through Christ which strengtheneth me.",
+        "reference": "Philippians 4:13"
+      },
+      {
+        "category": "strength",
+        "text": "He giveth power to the faint; and to them that have no might he increaseth strength.",
+        "reference": "Isaiah 40:29"
+      },
+      {
+        "category": "strength",
+        "text": "God is our refuge and strength, a very present help in trouble.",
+        "reference": "Psalm 46:1"
+      },
+      {
+        "category": "strength",
+        "text": "And he said unto me, My grace is sufficient for thee: for my strength is made perfect in weakness. For when I am weak, then am I strong.",
+        "reference": "2 Corinthians 12:9–10"
+      },
+      {
+        "category": "strength",
+        "text": "My flesh and my heart faileth: but God is the strength of my heart, and my portion for ever.",
+        "reference": "Psalm 73:26"
+      },
+      {
+        "category": "strength",
+        "text": "For the joy of the LORD is your strength.",
+        "reference": "Nehemiah 8:10"
+      },
+      {
+        "category": "strength",
+        "text": "Finally, my brethren, be strong in the Lord, and in the power of his might.",
+        "reference": "Ephesians 6:10"
+      },
+      {
+        "category": "strength",
+        "text": "The LORD is my strength and my shield; my heart trusted in him, and I am helped: therefore my heart greatly rejoiceth; and with my song will I praise him.",
+        "reference": "Psalm 28:7"
+      },
+      {
+        "category": "strength",
+        "text": "The LORD God is my strength, and he will make my feet like hinds' feet, and he will make me to walk upon mine high places.",
+        "reference": "Habakkuk 3:19"
+      },
+      {
+        "category": "strength",
+        "text": "It is God that girdeth me with strength, and maketh my way perfect.",
+        "reference": "Psalm 18:32"
+      },
+      {
+        "category": "guidance",
+        "text": "Trust in the LORD with all thine heart; and lean not unto thine own understanding. In all thy ways acknowledge him, and he shall direct thy paths.",
+        "reference": "Proverbs 3:5–6"
+      },
+      {
+        "category": "guidance",
+        "text": "I will instruct thee and teach thee in the way which thou shalt go: I will guide thee with mine eye.",
+        "reference": "Psalm 32:8"
+      },
+      {
+        "category": "guidance",
+        "text": "Thy word is a lamp unto my feet, and a light unto my path.",
+        "reference": "Psalm 119:105"
+      },
+      {
+        "category": "guidance",
+        "text": "And thine ears shall hear a word behind thee, saying, This is the way, walk ye in it, when ye turn to the right hand, and when ye turn to the left.",
+        "reference": "Isaiah 30:21"
+      },
+      {
+        "category": "guidance",
+        "text": "Shew me thy ways, O LORD; teach me thy paths. Lead me in thy truth, and teach me: for thou art the God of my salvation; on thee do I wait all the day.",
+        "reference": "Psalm 25:4–5"
+      },
+      {
+        "category": "guidance",
+        "text": "If any of you lack wisdom, let him ask of God, that giveth to all men liberally, and upbraideth not; and it shall be given him.",
+        "reference": "James 1:5"
+      },
+      {
+        "category": "guidance",
+        "text": "O LORD, I know that the way of man is not in himself: it is not in man that walketh to direct his steps.",
+        "reference": "Jeremiah 10:23"
+      },
+      {
+        "category": "guidance",
+        "text": "The steps of a good man are ordered by the LORD: and he delighteth in his way.",
+        "reference": "Psalm 37:23"
+      },
+      {
+        "category": "guidance",
+        "text": "A man's heart deviseth his way: but the LORD directeth his steps.",
+        "reference": "Proverbs 16:9"
+      },
+      {
+        "category": "guidance",
+        "text": "Cause me to hear thy lovingkindness in the morning; for in thee do I trust: cause me to know the way wherein I should walk; for I lift up my soul unto thee.",
+        "reference": "Psalm 143:8"
+      },
+      {
+        "category": "comfort",
+        "text": "The LORD is nigh unto them that are of a broken heart; and saveth such as be of a contrite spirit.",
+        "reference": "Psalm 34:18"
+      },
+      {
+        "category": "comfort",
+        "text": "Blessed are they that mourn: for they shall be comforted.",
+        "reference": "Matthew 5:4"
+      },
+      {
+        "category": "comfort",
+        "text": "He healeth the broken in heart, and bindeth up their wounds.",
+        "reference": "Psalm 147:3"
+      },
+      {
+        "category": "comfort",
+        "text": "Blessed be God, even the Father of our Lord Jesus Christ, the Father of mercies, and the God of all comfort; Who comforteth us in all our tribulation.",
+        "reference": "2 Corinthians 1:3–4"
+      },
+      {
+        "category": "comfort",
+        "text": "And God shall wipe away all tears from their eyes; and there shall be no more death, neither sorrow, nor crying, neither shall there be any more pain: for the former things are passed away.",
+        "reference": "Revelation 21:4"
+      },
+      {
+        "category": "comfort",
+        "text": "As one whom his mother comforteth, so will I comfort you.",
+        "reference": "Isaiah 66:13"
+      },
+      {
+        "category": "comfort",
+        "text": "Weeping may endure for a night, but joy cometh in the morning.",
+        "reference": "Psalm 30:5"
+      },
+      {
+        "category": "comfort",
+        "text": "The LORD is good, a strong hold in the day of trouble; and he knoweth them that trust in him.",
+        "reference": "Nahum 1:7"
+      },
+      {
+        "category": "comfort",
+        "text": "The LORD is my shepherd; I shall not want.",
+        "reference": "Psalm 23:1"
+      },
+      {
+        "category": "comfort",
+        "text": "These things I have spoken unto you, that in me ye might have peace. In the world ye shall have tribulation: but be of good cheer; I have overcome the world.",
+        "reference": "John 16:33"
+      },
+      {
+        "category": "faith",
+        "text": "Now faith is the substance of things hoped for, the evidence of things not seen.",
+        "reference": "Hebrews 11:1"
+      },
+      {
+        "category": "faith",
+        "text": "For we walk by faith, not by sight.",
+        "reference": "2 Corinthians 5:7"
+      },
+      {
+        "category": "faith",
+        "text": "Jesus said unto him, If thou canst believe, all things are possible to him that believeth.",
+        "reference": "Mark 9:23"
+      },
+      {
+        "category": "faith",
+        "text": "But without faith it is impossible to please him: for he that cometh to God must believe that he is, and that he is a rewarder of them that diligently seek him.",
+        "reference": "Hebrews 11:6"
+      },
+      {
+        "category": "faith",
+        "text": "If ye have faith as a grain of mustard seed, ye shall say unto this mountain, Remove hence to yonder place; and it shall remove; and nothing shall be impossible unto you.",
+        "reference": "Matthew 17:20"
+      },
+      {
+        "category": "faith",
+        "text": "So then faith cometh by hearing, and hearing by the word of God.",
+        "reference": "Romans 10:17"
+      },
+      {
+        "category": "faith",
+        "text": "In God I will praise his word, in God I have put my trust; I will not fear what flesh can do unto me.",
+        "reference": "Psalm 56:4"
+      },
+      {
+        "category": "faith",
+        "text": "Jesus saith unto him, Thomas, because thou hast seen me, thou hast believed: blessed are they that have not seen, and yet have believed.",
+        "reference": "John 20:29"
+      },
+      {
+        "category": "faith",
+        "text": "By faith Abraham, when he was called to go out into a place which he should after receive for an inheritance, obeyed; and he went out, not knowing whither he went.",
+        "reference": "Hebrews 11:8"
+      },
+      {
+        "category": "faith",
+        "text": "I have fought a good fight, I have finished my course, I have kept the faith.",
+        "reference": "2 Timothy 4:7"
+      },
+      {
+        "category": "forgiveness",
+        "text": "If we confess our sins, he is faithful and just to forgive us our sins, and to cleanse us from all unrighteousness.",
+        "reference": "1 John 1:9"
+      },
+      {
+        "category": "forgiveness",
+        "text": "As far as the east is from the west, so far hath he removed our transgressions from us.",
+        "reference": "Psalm 103:12"
+      },
+      {
+        "category": "forgiveness",
+        "text": "For if ye forgive men their trespasses, your heavenly Father will also forgive you.",
+        "reference": "Matthew 6:14"
+      },
+      {
+        "category": "forgiveness",
+        "text": "Forbearing one another, and forgiving one another, if any man have a quarrel against any: even as Christ forgave you, so also do ye.",
+        "reference": "Colossians 3:13"
+      },
+      {
+        "category": "forgiveness",
+        "text": "Come now, and let us reason together, saith the LORD: though your sins be as scarlet, they shall be as white as snow; though they be red like crimson, they shall be as wool.",
+        "reference": "Isaiah 1:18"
+      },
+      {
+        "category": "forgiveness",
+        "text": "And be ye kind one to another, tenderhearted, forgiving one another, even as God for Christ's sake hath forgiven you.",
+        "reference": "Ephesians 4:32"
+      },
+      {
+        "category": "forgiveness",
+        "text": "He will turn again, he will have compassion upon us; he will subdue our iniquities; and thou wilt cast all their sins into the depths of the sea.",
+        "reference": "Micah 7:19"
+      },
+      {
+        "category": "forgiveness",
+        "text": "For thou, Lord, art good, and ready to forgive; and plenteous in mercy unto all them that call upon thee.",
+        "reference": "Psalm 86:5"
+      },
+      {
+        "category": "forgiveness",
+        "text": "Then came Peter to him, and said, Lord, how oft shall my brother sin against me, and I forgive him? till seven times? Jesus saith unto him, I say not unto thee, Until seven times: but, Until seventy times seven.",
+        "reference": "Matthew 18:21–22"
+      },
+      {
+        "category": "forgiveness",
+        "text": "Judge not, and ye shall not be judged: condemn not, and ye shall not be condemned: forgive, and ye shall be forgiven.",
+        "reference": "Luke 6:37"
+      },
+      {
+        "category": "wisdom",
+        "text": "For the LORD giveth wisdom: and out of his mouth cometh knowledge and understanding.",
+        "reference": "Proverbs 2:6"
+      },
+      {
+        "category": "wisdom",
+        "text": "But the wisdom that is from above is first pure, then peaceable, gentle, and easy to be intreated, full of mercy and good fruits, without partiality, and without hypocrisy.",
+        "reference": "James 3:17"
+      },
+      {
+        "category": "wisdom",
+        "text": "Wisdom is the principal thing; therefore get wisdom: and with all thy getting get understanding.",
+        "reference": "Proverbs 4:7"
+      },
+      {
+        "category": "wisdom",
+        "text": "Happy is the man that findeth wisdom, and the man that getteth understanding.",
+        "reference": "Proverbs 3:13"
+      },
+      {
+        "category": "wisdom",
+        "text": "For wisdom is a defence, and money is a defence: but the excellency of knowledge is, that wisdom giveth life to them that have it.",
+        "reference": "Ecclesiastes 7:12"
+      },
+      {
+        "category": "wisdom",
+        "text": "The fear of the LORD is the beginning of wisdom: a good understanding have all they that do his commandments: his praise endureth for ever.",
+        "reference": "Psalm 111:10"
+      },
+      {
+        "category": "wisdom",
+        "text": "He that walketh with wise men shall be wise: but a companion of fools shall be destroyed.",
+        "reference": "Proverbs 13:20"
+      },
+      {
+        "category": "wisdom",
+        "text": "In whom are hid all the treasures of wisdom and knowledge.",
+        "reference": "Colossians 2:3"
+      },
+      {
+        "category": "wisdom",
+        "text": "The fear of the LORD is the beginning of wisdom: and the knowledge of the holy is understanding.",
+        "reference": "Proverbs 9:10"
+      },
+      {
+        "category": "wisdom",
+        "text": "Daniel answered and said, Blessed be the name of God for ever and ever: for wisdom and might are his.",
+        "reference": "Daniel 2:20"
+      },
+      {
+        "category": "joy",
+        "text": "Thou wilt shew me the path of life: in thy presence is fulness of joy; at thy right hand there are pleasures for evermore.",
+        "reference": "Psalm 16:11"
+      },
+      {
+        "category": "joy",
+        "text": "Thou hast turned for me my mourning into dancing: thou hast put off my sackcloth, and girded me with gladness.",
+        "reference": "Psalm 30:11"
+      },
+      {
+        "category": "joy",
+        "text": "Rejoice in the Lord alway: and again I say, Rejoice.",
+        "reference": "Philippians 4:4"
+      },
+      {
+        "category": "joy",
+        "text": "These things have I spoken unto you, that my joy might remain in you, and that your joy might be full.",
+        "reference": "John 15:11"
+      },
+      {
+        "category": "joy",
+        "text": "Whom having not seen, ye love; in whom, though now ye see him not, yet believing, ye rejoice with joy unspeakable and full of glory.",
+        "reference": "1 Peter 1:8"
+      },
+      {
+        "category": "joy",
+        "text": "Yet I will rejoice in the LORD, I will joy in the God of my salvation.",
+        "reference": "Habakkuk 3:18"
+      },
+      {
+        "category": "joy",
+        "text": "But let all those that put their trust in thee rejoice: let them ever shout for joy, because thou defendest them: let them also that love thy name be joyful in thee.",
+        "reference": "Psalm 5:11"
+      },
+      {
+        "category": "joy",
+        "text": "Therefore with joy shall ye draw water out of the wells of salvation.",
+        "reference": "Isaiah 12:3"
+      },
+      {
+        "category": "joy",
+        "text": "Thou hast put gladness in my heart, more than in the time that their corn and their wine increased.",
+        "reference": "Psalm 4:7"
+      },
+      {
+        "category": "joy",
+        "text": "My brethren, count it all joy when ye fall into divers temptations.",
+        "reference": "James 1:2"
+      },
+      {
+        "category": "love",
+        "text": "For God so loved the world, that he gave his only begotten Son, that whosoever believeth in him should not perish, but have everlasting life.",
+        "reference": "John 3:16"
+      },
+      {
+        "category": "love",
+        "text": "For I am persuaded, that neither death, nor life, nor angels, nor principalities, nor powers, nor things present, nor things to come, nor height, nor depth, nor any other creature, shall be able to separate us from the love of God, which is in Christ Jesus our Lord.",
+        "reference": "Romans 8:38–39"
+      },
+      {
+        "category": "love",
+        "text": "We love him, because he first loved us.",
+        "reference": "1 John 4:19"
+      },
+      {
+        "category": "love",
+        "text": "A new commandment I give unto you, That ye love one another; as I have loved you, that ye also love one another.",
+        "reference": "John 13:34"
+      },
+      {
+        "category": "love",
+        "text": "Beloved, let us love one another: for love is of God; and every one that loveth is born of God, and knoweth God. He that loveth not knoweth not God; for God is love.",
+        "reference": "1 John 4:7–8"
+      },
+      {
+        "category": "love",
+        "text": "That Christ may dwell in your hearts by faith; that ye, being rooted and grounded in love, may be able to comprehend with all saints what is the breadth, and length, and depth, and height; and to know the love of Christ, which passeth knowledge.",
+        "reference": "Ephesians 3:17–19"
+      },
+      {
+        "category": "love",
+        "text": "But the fruit of the Spirit is love, joy, peace, longsuffering, gentleness, goodness, faith.",
+        "reference": "Galatians 5:22"
+      },
+      {
+        "category": "love",
+        "text": "And above all things have fervent charity among yourselves: for charity shall cover the multitude of sins.",
+        "reference": "1 Peter 4:8"
+      },
+      {
+        "category": "love",
+        "text": "Know therefore that the LORD thy God, he is God, the faithful God, which keepeth covenant and mercy with them that love him and keep his commandments to a thousand generations.",
+        "reference": "Deuteronomy 7:9"
+      },
+      {
+        "category": "love",
+        "text": "Charity suffereth long, and is kind; charity envieth not; charity vaunteth not itself, is not puffed up, seeketh not her own, is not easily provoked, thinketh no evil.",
+        "reference": "1 Corinthians 13:4–5"
+      }
     ]
   },
-  "signature": "3V1Tn/2381rjjIiaV2bWIovCiTH7zB9fwWBM7aCY2VA4Rk6RF876pBmS+HoS7oJtHchL8m47dAranLE5CjQACQ=="
+  "signature": "lWehg/BLyS82wKI28VKEoIlKqo+Rw/oMI9oBdnRORw/gE3nAK3nRHZo1G4QjKuN13nQs+EjvYkOkyAllLvBWDQ=="
 }

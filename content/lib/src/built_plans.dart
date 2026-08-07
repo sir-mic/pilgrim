@@ -4,6 +4,7 @@ import 'book_table.dart';
 import 'default_copy.dart';
 import 'mcheyne_parser.dart';
 import 'models.dart';
+import 'verse_library.dart';
 
 /// Builds the three Pilgrim reading plans.
 ///
@@ -112,6 +113,7 @@ BundleContent buildDefaultBundleContent(
   required String mcheyneSourceJson,
   List<String>? reflectionPrompts,
   List<String>? notificationMessages,
+  List<VerseNudge>? verseNudges,
 }) {
   return BundleContent(
     plans: [
@@ -121,5 +123,6 @@ BundleContent buildDefaultBundleContent(
     ],
     reflectionPrompts: reflectionPrompts ?? defaultReflectionPrompts,
     notificationMessages: notificationMessages ?? defaultNotificationMessages,
+    verseNudges: verseNudges ?? buildDefaultVerseNudges(),
   );
 }
