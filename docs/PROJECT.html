@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>mic — Project Reference</title>
+<style>
+  :root{
+    --ink:#201C17; --gold:#8C6D3F; --surface:#F7F4EE;
+    --border:#D8D2C6; --muted:#5A554C; --dim:#857E70; --code-bg:#F1EEE7;
+  }
+  @page{ size:A4; margin:16mm 14mm; }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{
+    font-family:Georgia,"Times New Roman",serif;
+    color:var(--ink);
+    background:#FFFFFF;
+    line-height:1.55;
+    font-size:10.5pt;
+  }
+  .page{max-width:820px;margin:0 auto;padding:28px 30px 40px;}
+  header.cover{
+    border:1px solid var(--border);border-radius:12px;
+    padding:34px 30px;background:var(--surface);
+    margin-bottom:26px;
+  }
+  header.cover h1{color:var(--gold);font-size:26pt;letter-spacing:.5px;}
+  header.cover .sub{color:var(--muted);margin-top:6px;font-size:11pt;font-style:italic;}
+  header.cover .meta{color:var(--dim);margin-top:14px;font-size:9pt;line-height:1.7;}
+  h2{
+    color:var(--gold);font-size:15pt;
+    margin:30px 0 10px;padding-bottom:5px;
+    border-bottom:1px solid var(--border);
+  }
+  h3{color:var(--ink);font-size:11.5pt;margin:18px 0 6px;}
+  h4{color:var(--muted);font-size:10.5pt;margin:14px 0 4px;}
+  p{margin:6px 0;}
+  ul,ol{margin:6px 0 6px 22px;}
+  li{margin:3px 0;}
+  a{color:var(--gold);}
+  code{
+    font-family:Consolas,monospace;font-size:8.8pt;
+    background:var(--code-bg);border:1px solid var(--border);
+    border-radius:4px;padding:1px 5px;color:var(--ink);
+  }
+  pre{
+    font-family:Consolas,monospace;font-size:8.4pt;
+    background:var(--code-bg);border:1px solid var(--border);
+    border-radius:8px;padding:12px 14px;margin:8px 0;
+    overflow-x:auto;white-space:pre;line-height:1.45;color:var(--ink);
+  }
+  table{border-collapse:collapse;width:100%;margin:10px 0;font-size:9pt;}
+  th,td{border:1px solid var(--border);padding:6px 8px;text-align:left;vertical-align:top;}
+  th{background:var(--surface);color:var(--ink);font-weight:600;}
+  tr:nth-child(even) td{background:#FAF8F4;}
+  .note{
+    background:var(--surface);border-left:3px solid var(--gold);
+    border-radius:0 6px 6px 0;padding:10px 14px;margin:12px 0;
+    font-size:9.3pt;color:var(--muted);
+  }
+  .kbd{background:var(--code-bg);border:1px solid var(--border);border-radius:4px;padding:0 5px;}
+  .toc li{margin:4px 0;}
+  .toc a{color:var(--ink);text-decoration:none;}
+  footer{color:var(--dim);font-size:8.5pt;text-align:center;margin-top:34px;border-top:1px solid var(--border);padding-top:10px;}
+  h2{page-break-after:avoid;}
+  .toc{page-break-before:always;}
+  h2.toc-title{margin-top:0;}
+  section{padding:0;}
+</style>
+</head>
+<body>
+<div class="page">
+
+<header class="cover">
+  <h1>mic — Project Reference</h1>
+  <p class="sub">A quiet companion for daily reading: the app, the content pipeline, the landing page, and the feedback API.</p>
+  <p class="meta">
+    Last updated: August 2026 &nbsp;·&nbsp; App version: 1.0.3+4 &nbsp;·&nbsp; Flutter 3.44.8 / Dart ^3.12.2<br>
+    Repos: <code>sir-mic/pilgrim</code> (app) · <code>sir-mic/path2mic</code> (landing page)<br>
+    Live site: <a href="https://sir-mic.github.io/path2mic/">https://sir-mic.github.io/path2mic/</a>
+  </p>
+</header>
+
+<h2 class="toc-title">Contents</h2>
+<ol class="toc">
+  <li><a href="#overview">Overview &amp; system diagram</a></li>
+  <li><a href="#folders">Folder / repository map</a></li>
+  <li><a href="#app">The Android app</a></li>
+  <li><a href="#content-pipeline">Content pipeline &amp; signing</a></li>
+  <li><a href="#admin">Admin tool</a></li>
+  <li><a href="#landing">Landing page</a></li>
+  <li><a href="#feedback-api">Feedback API (Cloudflare Worker + KV)</a></li>
+  <li><a href="#build-release">Build &amp; release process</a></li>
+  <li><a href="#urls">URL quick-reference</a></li>
+  <li><a href="#faq">FAQ &amp; troubleshooting</a></li>
+</ol>
+
+<!-- 1 ---------------------------------------------------------------- -->
+<h2 id="overview">1. Overview &amp; system diagram</h2>
+<p>
+  <strong>mic</strong> (internally <em>Pilgrim</em>, package <code>pilgrim_app</code>) is a free
+  Android app for reading the Bible a little at a time. It ships reading plans
+  (one chapter a day), a daily reflection prompt, a journal, progress tracking,
+  and an optional quiet daily reminder.
+</p>
+<p>The whole project is split across four pieces:</p>
+<ul>
+  <li><strong>App</strong> — Flutter/Android app that stores everything locally in SQLite.</li>
+  <li><strong>Content</strong> — a signed, data-driven "content bundle" (plans, prompts, notification copy) that the app can refresh without an app update.</li>
+  <li><strong>Landing page</strong> — a GitHub Pages site with the download button and the feedback form.</li>
+  <li><strong>Feedback API</strong> — a Cloudflare Worker + KV that stores feedback submissions privately.</li>
+</ul>
+
+<h3>System diagram</h3>
+<pre>
+                 ┌─────────────────────────────────────────────────┐
+                 │                 CONTENT PIPELINE                │
+                 │  source JSON ──&gt; sign (Ed25519) ──&gt; content.json │
+                 └───────┬──────────────────────┬──────────────────┘
+                         │                      │
+        bundled in app   │                      │ hosted on GitHub Pages
+        (offline first)  ▼                      ▼
+                 ┌───────────────┐      https://sir-mic.github.io/pilgrim/content.json
+                 │   THE APP     │◄───── (app checks on launch for a newer version)
+                 │  (Flutter)    │
+                 └──┬────────┬───┘
+                    │        │
+      download APK  │        │  feedback form (POST JSON)
+                    ▼        ▼
+      ┌──────────────────┐   ┌──────────────────────────────────────┐
+      │  GitHub Release  │   │  Cloudflare Worker + KV (private)    │
+      │  mic-app.apk     │   │  POST /  → stores  · GET /feedback   │
+      │  (sir-mic/pilgrim)│  │  ?key=…  reads (owner only)          │
+      └──────────────────┘   └──────────────────────────────────────┘
+              ▲                        ▲
+              │                        │
+      ┌───────┴────────────────────────┴────────┐
+      │       LANDING PAGE (GitHub Pages)        │
+      │  https://sir-mic.github.io/path2mic/      │
+      └──────────────────────────────────────────┘
+</pre>
+
+<div class="note">
+  Everything the user creates (journal, progress, settings) lives only on the
+  device, in the app's private SQLite database. There is no server-side account
+  and no backup/export feature yet.
+</div>
+
+<!-- 2 ---------------------------------------------------------------- -->
+<h2 id="folders">2. Folder / repository map</h2>
+<table>
+  <tr><th>Folder</th><th>Git repo</th><th>What it is</th></tr>
+  <tr><td><code>app/</code></td><td><code>sir-mic/pilgrim</code></td><td>The Flutter Android app (<code>pilgrim_app</code>).</td></tr>
+  <tr><td><code>content/</code></td><td><em>not in git</em></td><td>Content source, signing tool and <strong>private key</strong>. Local only.</td></tr>
+  <tr><td><code>admin/</code></td><td><em>not in git</em></td><td>Flutter web admin tool for editing and publishing content.</td></tr>
+  <tr><td><code>site/</code></td><td><code>sir-mic/path2mic</code></td><td>Landing page + Cloudflare Worker code.</td></tr>
+</table>
+
+<div class="note">
+  <strong>Security:</strong> <code>content/keys/private_key.pem</code> is the Ed25519
+  signing key for content bundles. It is <em>not</em> in any git repository and must never
+  be committed. Only the public key ships in the app.
+</div>
+
+<!-- 3 ---------------------------------------------------------------- -->
+<h2 id="app">3. The Android app</h2>
+
+<h3>3.1 Stack</h3>
+<table>
+  <tr><th>Piece</th><th>Choice</th><th>Role</th></tr>
+  <tr><td>Framework</td><td>Flutter 3.44.8 (stable)</td><td>UI + Android target</td></tr>
+  <tr><td>Language</td><td>Dart ^3.12.2</td><td>App language</td></tr>
+  <tr><td>State</td><td>flutter_riverpod ^2.6.1</td><td>Providers, reactive state</td></tr>
+  <tr><td>Local DB</td><td>drift ^2.34.3 + drift_flutter</td><td>SQLite (all user data)</td></tr>
+  <tr><td>Notifications</td><td>flutter_local_notifications ^22.2.0, timezone, flutter_timezone</td><td>Daily quiet reminder (exact alarms)</td></tr>
+  <tr><td>Content security</td><td>cryptography ^2.9.0</td><td>Ed25519 signature verification</td></tr>
+  <tr><td>Networking</td><td>http ^1.6.0</td><td>Remote content refresh</td></tr>
+  <tr><td>Deep links</td><td>url_launcher ^6.3.2</td><td>"Send feedback" → opens landing page</td></tr>
+  <tr><td>Dates</td><td>intl ^0.20.3</td><td>Date formatting</td></tr>
+  <tr><td>Content</td><td>pilgrim_content (path <code>../content</code>)</td><td>Models, validation, verification</td></tr>
+  <tr><td>Font</td><td>Lora (variable)</td><td>App + landing page typeface</td></tr>
+  <tr><td>Build</td><td><code>build-apk.ps1</code></td><td>Builds and renames the release APK</td></tr>
+</table>
+<p>
+  Android identity: <code>applicationId com.pilgrim.pilgrim_app</code>, debug-signed release
+  builds, <code>version 1.0.3+4</code> (name 1.0.3, code 4). App display name: <strong>mic</strong>.
+</p>
+
+<h3>3.2 Startup flow (<code>lib/main.dart</code>)</h3>
+<ol>
+  <li><code>main()</code> initialises the notification service, then runs the app inside a Riverpod <code>ProviderScope</code>.</li>
+  <li>The bootstrap provider seeds the bundled content (verifies the signature, reconciles into the DB) and restores the saved theme.</li>
+  <li>If not onboarded → <code>OnboardingScreen</code>; otherwise → <code>HomeShell</code>.</li>
+  <li>After first frame, <code>HomeShell</code> silently checks for a remote content update and re-schedules the daily reminder if enabled.</li>
+</ol>
+
+<h3>3.3 Architecture</h3>
+<pre>
+UI (screens)
+   │  Riverpod providers (lib/core/providers.dart)
+   ▼
+Repositories
+   ├─ AppRepository      (lib/core/data/app_repository.dart)   — settings, plans, progress, sessions, prompts
+   └─ ContentRepository  (lib/core/content/content_repository.dart) — seed + remote content, verify, reconcile
+   │
+   ▼
+AppDatabase (lib/core/database/app_database.dart) — drift / SQLite
+   └─ BundleVerifier (lib/core/content/signature_verifier.dart) — embedded Ed25519 public key
+</pre>
+
+<h3>3.4 Database schema (drift, <code>schemaVersion 2</code>, file <code>pilgrim.db</code>)</h3>
+<table>
+  <tr><th>Table</th><th>Holds</th></tr>
+  <tr><td><code>content_meta</code></td><td>Which content-bundle version is loaded (<code>id</code>, <code>version</code>, <code>updatedAt</code>).</td></tr>
+  <tr><td><code>plans</code></td><td>Reading plans (<code>slug</code>, title, description, kind, total days).</td></tr>
+  <tr><td><code>plan_days</code></td><td>One row per plan day; <code>readings</code> is a JSON array.</td></tr>
+  <tr><td><code>reflection_prompts</code></td><td>Daily reflection prompt pool.</td></tr>
+  <tr><td><code>notification_messages</code></td><td>Calm reminder message pool.</td></tr>
+  <tr><td><code>sessions</code></td><td>Journal entries — store an immutable snapshot of the day's readings so later content changes never rewrite history.</td></tr>
+  <tr><td><code>settings_table</code></td><td>Key/value settings (see keys below).</td></tr>
+  <tr><td><code>reading_progress</code></td><td>Partial progress through today's readings; keyed by <code>(planSlug, date)</code> so it expires each day.</td></tr>
+</table>
+
+<p>Settings keys: <code>planSlug</code>, <code>onboarded</code>, <code>reminderEnabled</code>,
+<code>reminderHour</code>, <code>reminderMinute</code>, <code>themeMode</code>,
+<code>manifestUrl</code>, and <code>progress_&lt;planSlug&gt;</code> (days completed this run).</p>
+
+<h3>3.5 Screens</h3>
+<ul>
+  <li><strong>Onboarding</strong> — first-run flow; picks a plan.</li>
+  <li><strong>Home / Today</strong> — today's reading, prompt, completion.</li>
+  <li><strong>Reading flow</strong> — one chapter at a time with rest/resume progress.</li>
+  <li><strong>Journal</strong> — timeline of completed sessions, searchable, with detail view.</li>
+  <li><strong>Progress</strong> — stats: completed days, sessions per plan, completed plans.</li>
+  <li><strong>Settings</strong> — daily reminder (+ time, exact alarms, Autostart hint), theme, current plan / restart plan, About with <em>Send feedback</em>.</li>
+</ul>
+
+<h3>3.6 Reminder</h3>
+<ul>
+  <li>Scheduled daily via <code>flutter_local_notifications</code> with exact alarms (Android 12+).</li>
+  <li>Time zone handled with <code>timezone</code> + <code>flutter_timezone</code>.</li>
+  <li>Re-scheduled on every launch if enabled; message picked from the content bundle.</li>
+</ul>
+
+<h3>3.7 Send feedback (Settings → About)</h3>
+<p>
+  A <code>ListTile</code> in Settings opens
+  <code>https://sir-mic.github.io/path2mic/#feedback</code> in the external browser
+  via <code>url_launcher</code> — where the user can submit a private feedback message.
+</p>
+
+<!-- 4 ---------------------------------------------------------------- -->
+<h2 id="content-pipeline">4. Content pipeline &amp; signing</h2>
+<p>
+  Reading content is <em>data, not code</em>. A signed JSON bundle carries plans,
+  prompts and notification messages. The app ships a copy (offline first) and can
+  pull a newer bundle from the web — no app update required.
+</p>
+
+<h3>4.1 The <code>pilgrim_content</code> package (<code>content/</code>, local path dependency)</h3>
+<table>
+  <tr><th>File</th><th>Purpose</th></tr>
+  <tr><td><code>lib/src/models.dart</code></td><td>Content models (<code>SignedBundle</code>, plans, readings…).</td></tr>
+  <tr><td><code>lib/src/validation.dart</code></td><td>Content validation.</td></tr>
+  <tr><td><code>lib/src/canonical_json.dart</code></td><td>Canonical JSON so signatures are stable.</td></tr>
+  <tr><td><code>lib/src/signing.dart</code></td><td>Ed25519 sign/verify helpers.</td></tr>
+  <tr><td><code>lib/src/book_table.dart</code>, <code>built_plans.dart</code>, <code>mcheyne_parser.dart</code>, <code>default_copy.dart</code></td><td>Plan/verse helpers and defaults.</td></tr>
+  <tr><td><code>bin/pilgrim_build.dart</code></td><td>CLI: <code>keygen</code> and <code>build</code>.</td></tr>
+</table>
+
+<h3>4.2 Build commands</h3>
+<pre>
+cd content
+dart run pilgrim_build keygen      # new Ed25519 key pair → keys/private_key.pem (+ printed public key)
+dart run pilgrim_build build       # validate + sign source/mcheyne-plan.json
+                                   # → build/content.json and ../app/assets/content/content.json
+</pre>
+
+<h3>4.3 Verification &amp; reconcile (in the app)</h3>
+<ul>
+  <li>The app embeds the <strong>public</strong> key (<code>signature_verifier.dart</code>).</li>
+  <li>On first run it verifies the bundled asset and seeds the DB.</li>
+  <li>On launch it fetches <code>https://sir-mic.github.io/pilgrim/content.json</code>, verifies the signature, and reconciles if the version is newer. Failures are silent — the app keeps its last-known-good local copy and stays usable offline.</li>
+  <li>Reconcile upserts plans, replaces prompts/messages; user progress and journal are never touched.</li>
+</ul>
+
+<!-- 5 ---------------------------------------------------------------- -->
+<h2 id="admin">5. Admin tool</h2>
+<p>
+  A small Flutter <em>web</em> app (<code>admin/</code>, local only) for maintaining content.
+  It has four parts:
+</p>
+<table>
+  <tr><th>File</th><th>Purpose</th></tr>
+  <tr><td><code>lib/main.dart</code></td><td>App shell.</td></tr>
+  <tr><td><code>lib/src/plans_tab.dart</code></td><td>Edit reading plans/days.</td></tr>
+  <tr><td><code>lib/src/copy_tab.dart</code></td><td>Edit prompts and notification copy.</td></tr>
+  <tr><td><code>lib/src/publish_tab.dart</code></td><td>Trigger a build + publish of <code>content.json</code>.</td></tr>
+  <tr><td><code>lib/src/github_publish.dart</code></td><td>Publishes the bundle to the <code>sir-mic/pilgrim</code> GitHub Pages manifest URL.</td></tr>
+</table>
+<p>Publishing updates <code>https://sir-mic.github.io/pilgrim/content.json</code>, which installed apps pick up automatically.</p>
+
+<!-- 6 ---------------------------------------------------------------- -->
+<h2 id="landing">6. Landing page</h2>
+<p>
+  <code>site/index.html</code> is a single self-contained page (CSS + JS inline) hosted on
+  GitHub Pages at <code>https://sir-mic.github.io/path2mic/</code>. Pushing to <code>main</code>
+  auto-publishes.
+</p>
+
+<h3>6.1 Theme</h3>
+<table>
+  <tr><th>Token</th><th>Value</th><th>Use</th></tr>
+  <tr><td><code>--bg</code></td><td><code>#161310</code></td><td>Page background</td></tr>
+  <tr><td><code>--surface</code></td><td><code>#201B17</code></td><td>Cards / forms</td></tr>
+  <tr><td><code>--border</code></td><td><code>#342F29</code></td><td>Borders</td></tr>
+  <tr><td><code>--gold</code></td><td><code>#C9A876</code></td><td>Accent</td></tr>
+  <tr><td><code>--cream</code></td><td><code>#EDE6D8</code></td><td>Primary text</td></tr>
+  <tr><td><code>--muted</code> / <code>--dim</code></td><td><code>#A89E8C</code> / <code>#716C64</code></td><td>Secondary / tertiary text</td></tr>
+</table>
+<p>Typeface: Lora (Google Fonts). Sections: nav, hero (phone mockup), about, download, feedback.</p>
+
+<h3>6.2 Download button</h3>
+<p>
+  Points to <code>https://github.com/sir-mic/pilgrim/releases/latest/download/mic-app.apk</code>
+  — always the newest published release asset.
+</p>
+
+<h3>6.3 Feedback form</h3>
+<p>
+  A mobile-friendly form (name, type bug/suggestion, message) that POSTs JSON to the
+  Cloudflare Worker URL wired into <code>const API_URL</code>. Feedback is
+  <strong>never shown publicly</strong> on the page.
+</p>
+
+<!-- 7 ---------------------------------------------------------------- -->
+<h2 id="feedback-api">7. Feedback API (Cloudflare Worker + KV)</h2>
+<p>
+  Live worker:
+  <code>https://divine-glitter-11cefeedback.mikeharoldhandig12.workers.dev</code> ·
+  Source: <code>site/worker/feedback-worker.js</code> · Deploy steps: <code>site/worker/README.md</code>.
+</p>
+
+<h3>7.1 Endpoints</h3>
+<table>
+  <tr><th>Method + path</th><th>Behaviour</th></tr>
+  <tr><td><code>POST /</code></td><td>Stores <code>{ name, type ("bug"|"suggestion"), message, date }</code> in KV. Returns <code>201</code>.</td></tr>
+  <tr><td><code>GET /feedback?key=…</code></td><td>Returns <code>{ "items": […] }</code> newest-first. <strong>403 without the secret key</strong>.</td></tr>
+  <tr><td><code>OPTIONS</code></td><td><code>204</code> with CORS headers (writes are open so the site can submit).</td></tr>
+</table>
+
+<h3>7.2 Setup summary</h3>
+<ul>
+  <li>Cloudflare Worker with a KV namespace binding named <code>FEEDBACK</code>.</li>
+  <li>Text variable <code>FEEDBACK_SECRET</code> = your private read key.</li>
+  <li>Read feedback at <code>/feedback?key=YOUR_SECRET</code> (browser or <code>curl</code>).</li>
+</ul>
+
+<pre>
+# submit
+curl -X POST https://…workers.dev -H "Content-Type: application/json" \
+  -d '{"name":"Tester","type":"bug","message":"Reminder fired early"}'
+
+# read (private)
+curl "https://…workers.dev/feedback?key=YOUR_SECRET"
+</pre>
+
+<!-- 8 ---------------------------------------------------------------- -->
+<h2 id="build-release">8. Build &amp; release process</h2>
+
+<h3>8.1 Building the APK</h3>
+<pre>
+cd app
+powershell -ExecutionPolicy Bypass -File .\build-apk.ps1
+# → build\app\outputs\flutter-apk\mic-app.apk  (≈58 MB)
+</pre>
+<p>
+  The script runs <code>flutter build apk --release</code> then renames the artifact to
+  <code>mic-app.apk</code> (Flutter always emits <code>app-release.apk</code> internally).
+</p>
+
+<h3>8.2 Signing &amp; updates (data safety)</h3>
+<ul>
+  <li>Release builds are signed with the <strong>debug keystore</strong> (<code>~/.android/debug.keystore</code>).</li>
+  <li>Updating keeps all data (journal, progress, settings) <em>as long as</em> the new APK has the same signature and a version code ≥ installed.</li>
+  <li>Building on a <em>different machine</em> produces a different debug keystore → signature mismatch → install fails and data would be lost after a forced uninstall. Build on this machine.</li>
+  <li>Version lives in <code>app/pubspec.yaml</code> (<code>version: name+build</code>). Bump it on every release.</li>
+</ul>
+
+<h3>8.3 Publishing a release</h3>
+<ol>
+  <li>Build <code>mic-app.apk</code> (above).</li>
+  <li>On <code>sir-mic/pilgrim</code> → Releases → create/edit release with tag matching the app version.</li>
+  <li>Attach <strong><code>mic-app.apk</code></strong> (the landing page download link expects that filename).</li>
+</ol>
+
+<!-- 9 ---------------------------------------------------------------- -->
+<h2 id="urls">9. URL quick-reference</h2>
+<table>
+  <tr><th>Thing</th><th>URL</th></tr>
+  <tr><td>App repo</td><td><code>https://github.com/sir-mic/pilgrim</code></td></tr>
+  <tr><td>Landing page repo</td><td><code>https://github.com/sir-mic/path2mic</code></td></tr>
+  <tr><td>Landing page (live)</td><td><code>https://sir-mic.github.io/path2mic/</code></td></tr>
+  <tr><td>Feedback anchor</td><td><code>https://sir-mic.github.io/path2mic/#feedback</code></td></tr>
+  <tr><td>APK download</td><td><code>https://github.com/sir-mic/pilgrim/releases/latest/download/mic-app.apk</code></td></tr>
+  <tr><td>Content manifest</td><td><code>https://sir-mic.github.io/pilgrim/content.json</code></td></tr>
+  <tr><td>Feedback Worker</td><td><code>https://divine-glitter-11cefeedback.mikeharoldhandig12.workers.dev</code></td></tr>
+  <tr><td>Feedback read (private)</td><td><code>…/feedback?key=YOUR_SECRET</code> (403 without key)</td></tr>
+</table>
+
+<!-- 10 --------------------------------------------------------------- -->
+<h2 id="faq">10. FAQ &amp; troubleshooting</h2>
+
+<h4>Will updating the app lose my journal/notes?</h4>
+<p>
+  No — if the new APK has the same signature and an equal-or-higher version code,
+  Android upgrades in place and keeps all data. Data is only lost on uninstall,
+  factory reset, or a signature mismatch (see §8.2).
+</p>
+
+<h4>The download button on the site returns nothing.</h4>
+<p>
+  It only works once a release exists on <code>sir-mic/pilgrim</code> with an asset named
+  <code>mic-app.apk</code>.
+</p>
+
+<h4>How do I see feedback submissions?</h4>
+<p>
+  Visit <code>https://divine-glitter-11cefeedback.mikeharoldhandig12.workers.dev/feedback?key=YOUR_SECRET</code>
+  in a browser, or download as JSON with <code>curl</code>.
+</p>
+
+<h4>Feedback form says the worker URL isn't set.</h4>
+<p>
+  In <code>site/index.html</code>, the <code>API_URL</code> constant must be the live worker URL
+  (it currently is). A <code>YOUR_WORKER_URL_HERE</code> placeholder means it wasn't wired up.
+</p>
+
+<h4>I changed content — how do installed apps get it?</h4>
+<p>
+  Rebuild with <code>pilgrim_build build</code> (bump <code>--version</code>), publish
+  <code>content.json</code> to the GitHub Pages manifest, and rebuild the app asset for new installs.
+  Installed apps pull the newer manifest automatically on launch.
+</p>
+
+<footer>mic — project reference · generated from the local workspace at C:\Users\MIKE\Desktop\buk · not a substitute for the source of truth (the code).</footer>
+
+</div>
+</body>
+</html>
