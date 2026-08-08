@@ -46,11 +46,21 @@ void main() {
   Finder micDropCard() =>
       find.ancestor(of: find.text('mic drop'), matching: find.byType(Card)).first;
 
+  Future<void> expandMicDrop(WidgetTester tester) async {
+    if (tester.any(find.text('Send one now'))) return;
+    await tester.tap(find.descendant(
+      of: micDropCard(),
+      matching: find.byType(IconButton),
+    ));
+    await tester.pumpAndSettle();
+  }
+
   Future<void> enableMicDrop(WidgetTester tester) async {
     final card = micDropCard();
     await tester.scrollUntilVisible(card, 200);
     await tester.tap(find.descendant(of: card, matching: find.byType(Switch)));
     await tester.pumpAndSettle();
+    await expandMicDrop(tester);
   }
 
   FilterChip chip(WidgetTester tester, String label) =>

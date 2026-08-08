@@ -25,6 +25,7 @@ class AppRepository {
   static const keyMicDropEnabled = 'micdropEnabled';
   static const keyMicDropIntervalHours = 'micdropIntervalHours';
   static const keyMicDropCategories = 'micdropCategories';
+  static const keyMicDropExpanded = 'micdropExpanded';
 
   Future<String?> getSetting(String key) async {
     final row = await (_db.select(_db.settingsTable)
@@ -83,6 +84,14 @@ class AppRepository {
       setSetting(keyMicDropCategories, jsonEncode(categories));
 
   Future<void> clearMicDropCategories() => setSetting(keyMicDropCategories, '');
+
+  /// Whether the mic drop options are expanded. Defaults to collapsed; the
+  /// user's choice is remembered across launches.
+  Future<bool> micDropExpanded() async =>
+      await getSetting(keyMicDropExpanded) == '1';
+
+  Future<void> setMicDropExpanded(bool expanded) =>
+      setSetting(keyMicDropExpanded, expanded ? '1' : '0');
 
   /// Every mic drop verse currently in the local content.
   Future<List<VerseNudge>> allMicDropVerses() async {

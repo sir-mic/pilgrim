@@ -1,3 +1,6 @@
+import 'dart:math';
+import 'dart:ui' show ImageFilter;
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
@@ -47,29 +50,42 @@ class _TodayBody extends ConsumerWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          if (showWelcome) ...[
-            Text(
-              'Welcome back.',
-              style: theme.textTheme.titleMedium
-                  ?.copyWith(color: theme.colorScheme.primary),
-            ),
-            Text(
-              'Let\'s continue where we left off.',
-              style: theme.textTheme.bodyMedium
-                  ?.copyWith(color: theme.colorScheme.onSurfaceVariant),
-            ),
-            const SizedBox(height: 24),
-          ],
-          Text(weekday,
-              style: theme.textTheme.labelSmall
-                  ?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
-          const SizedBox(height: 4),
-          Text(monthDay, style: theme.textTheme.displaySmall),
-          const SizedBox(height: 8),
-          Text(
-            '${reading.plan.title} · Day ${reading.currentDay} of ${reading.plan.totalDays}',
-            style: theme.textTheme.labelMedium
-                ?.copyWith(color: theme.colorScheme.onSurfaceVariant),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    if (showWelcome) ...[
+                      Text(
+                        'Welcome back.',
+                        style: theme.textTheme.titleMedium
+                            ?.copyWith(color: theme.colorScheme.primary),
+                      ),
+                      Text(
+                        'Let\'s continue where we left off.',
+                        style: theme.textTheme.bodyMedium
+                            ?.copyWith(color: theme.colorScheme.onSurfaceVariant),
+                      ),
+                      const SizedBox(height: 24),
+                    ],
+                    Text(weekday,
+                        style: theme.textTheme.labelSmall
+                            ?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
+                    const SizedBox(height: 4),
+                    Text(monthDay, style: theme.textTheme.displaySmall),
+                    const SizedBox(height: 8),
+                    Text(
+                      '${reading.plan.title} · Day ${reading.currentDay} of ${reading.plan.totalDays}',
+                      style: theme.textTheme.labelMedium
+                          ?.copyWith(color: theme.colorScheme.onSurfaceVariant),
+                    ),
+                  ],
+                ),
+              ),
+              const _NudgeButton(),
+            ],
           ),
 
           const SizedBox(height: 28),
@@ -127,6 +143,90 @@ class _CardDivider extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Divider(color: Theme.of(context).colorScheme.outline);
+  }
+}
+
+/// The little sparkle in the top-right corner of Today. Tapping it shows a
+/// blurred nudge card with one random line — mic's gentle way of asking you
+/// to open your Bible.
+class _NudgeButton extends StatelessWidget {
+  const _NudgeButton();
+
+  static const _messages = [
+    "Got your Bible? Good. Let's read.",
+    'Bible nearby? Let\'s spend a little time in the Word.',
+    'You got the Book? Let\'s open it.',
+    'Got your Book? mic knows where to start.',
+    'The Word is waiting. Open your Bible.',
+    'Bible ready? Let\'s read.',
+    'Still got that Bible? Good. Open it.',
+    'C\'mon. It\'s time.',
+    'Today\'s chapter is waiting between two covers.',
+    'Pick it up — the page is already marked.',
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    return IconButton(
+      tooltip: 'A quiet nudge',
+      onPressed: () => _showNudge(context),
+      icon: const Icon(Icons.auto_awesome),
+      color: Theme.of(context).colorScheme.onSurfaceVariant,
+    );
+  }
+
+  static void _showNudge(BuildContext context) {
+    final message = _messages[Random().nextInt(_messages.length)];
+
+    showGeneralDialog<void>(
+      context: context,
+      barrierDismissible: true,
+      barrierLabel: 'Nudge',
+      barrierColor: Colors.transparent,
+      transitionDuration: const Duration(milliseconds: 250),
+      pageBuilder: (context, _, _) {
+        final theme = Theme.of(context);
+        return Stack(
+          children: [
+            Positioned.fill(
+              child: BackdropFilter(
+                filter: ImageFilter.blur(sigmaX: 6, sigmaY: 6),
+                child:
+                    Container(color: Colors.black.withValues(alpha: 0.35)),
+              ),
+            ),
+            Center(
+              child: Container(
+                margin: const EdgeInsets.symmetric(horizontal: 32),
+                padding: const EdgeInsets.all(24),
+                decoration: BoxDecoration(
+                  color: theme.colorScheme.surfaceContainerHighest,
+                  borderRadius: BorderRadius.circular(24),
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(Icons.auto_stories_outlined,
+                        size: 28, color: theme.colorScheme.primary),
+                    const SizedBox(height: 16),
+                    Text(
+                      message,
+                      textAlign: TextAlign.center,
+                      style: theme.textTheme.headlineSmall,
+                    ),
+                    const SizedBox(height: 20),
+                    GhostButton(
+                      label: 'Let\'s read',
+                      onPressed: () => Navigator.of(context).pop(),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        );
+      },
+    );
   }
 }
 

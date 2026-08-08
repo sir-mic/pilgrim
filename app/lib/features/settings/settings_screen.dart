@@ -300,8 +300,9 @@ class _MicDropTileState extends ConsumerState<_MicDropTile> {
   int _intervalHours = 2;
 
   /// Whether the details (interval, categories, send now) are expanded.
-  /// Independent of [_enabled] — collapsing never turns mic drop off.
-  bool _expanded = true;
+  /// Independent of [_enabled] — collapsing never turns mic drop off. The
+  /// choice is persisted so it stays collapsed across launches.
+  bool _expanded = false;
 
   /// Enabled category ids; null means every category available is enabled.
   Set<String>? _enabledCategories;
@@ -317,12 +318,20 @@ class _MicDropTileState extends ConsumerState<_MicDropTile> {
     final enabled = await repo.micDropEnabled();
     final interval = await repo.micDropIntervalHours();
     final categories = await repo.micDropCategories();
+    final expanded = await repo.micDropExpanded();
     if (!mounted) return;
     setState(() {
       _enabled = enabled;
       if (interval != null) _intervalHours = interval;
       _enabledCategories = categories?.toSet();
+      _expanded = expanded;
     });
+  }
+
+  void _toggleExpanded() {
+    final next = !_expanded;
+    setState(() => _expanded = next);
+    ref.read(appRepositoryProvider).setMicDropExpanded(next);
   }
 
   /// Categories present in the current content, oldest first, so new bundles
@@ -417,7 +426,7 @@ class _MicDropTileState extends ConsumerState<_MicDropTile> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         InkWell(
-          onTap: () => setState(() => _expanded = !_expanded),
+          onTap: _toggleExpanded,
           borderRadius: BorderRadius.circular(16),
           child: Padding(
             padding: const EdgeInsets.fromLTRB(16, 8, 8, 8),
@@ -448,8 +457,7 @@ class _MicDropTileState extends ConsumerState<_MicDropTile> {
                   icon: Icon(
                     _expanded ? Icons.expand_less : Icons.expand_more,
                   ),
-                  onPressed: () =>
-                      setState(() => _expanded = !_expanded),
+                  onPressed: _toggleExpanded,
                 ),
               ],
             ),
