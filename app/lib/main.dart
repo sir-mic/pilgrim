@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -61,19 +63,51 @@ final _bootstrapProvider = FutureProvider<_BootstrapState>((ref) async {
     _ => ThemeMode.dark,
   };
 
+  // Keep the splash up long enough for the rotating tagline to be seen.
+  await Future<void>.delayed(const Duration(milliseconds: 2000));
+
   return _BootstrapState(onboarded: onboarded);
 });
 
-class _Splash extends StatelessWidget {
+class _Splash extends StatefulWidget {
   const _Splash();
+
+  @override
+  State<_Splash> createState() => _SplashState();
+}
+
+class _SplashState extends State<_Splash> {
+  static const _taglines = [
+    'Not another Bible app.',
+    'Your Bible\'s companion.',
+    'The app that wants you to leave it.',
+    'It keeps the pace, you keep the Book.',
+    'Open your Bible. We\'ll keep the pace.',
+    'You bring the Bible, we\'ll bring the plan.',
+  ];
+
+  late final String _tagline = _taglines[Random().nextInt(_taglines.length)];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Center(
-        child: Text(
-          'mic',
-          style: Theme.of(context).textTheme.displaySmall,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 32),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text('mic', style: Theme.of(context).textTheme.displaySmall),
+              const SizedBox(height: 14),
+              Text(
+                _tagline,
+                textAlign: TextAlign.center,
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    ),
+              ),
+            ],
+          ),
         ),
       ),
     );

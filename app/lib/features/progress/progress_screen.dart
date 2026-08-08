@@ -12,7 +12,8 @@ class ProgressScreen extends ConsumerWidget {
     final theme = Theme.of(context);
     final reading = ref.watch(currentReadingProvider);
     final completedPlans = ref.watch(_completedPlansProvider);
-    final total = ref.watch(_totalSessionsProvider);
+    final perPlan = ref.watch(_sessionsPerPlanProvider);
+    final plans = ref.watch(allPlansProvider);
 
     return SafeArea(
       child: ListView(
@@ -61,10 +62,24 @@ class ProgressScreen extends ConsumerWidget {
 
           const SizedBox(height: 40),
 
-          total.when(
-            data: (count) => _StatCard(
-              label: 'Readings completed',
-              value: '$count',
+          Text('Readings completed', style: theme.textTheme.labelSmall),
+          const SizedBox(height: 12),
+          plans.when(
+            data: (list) => perPlan.when(
+              data: (counts) => Column(
+                children: [
+                  for (final plan in list) ...[
+                    _StatCard(
+                      label: plan.title,
+                      value: '${counts[plan.slug] ?? 0}',
+                      highlighted: reading.value?.plan.slug == plan.slug,
+                    ),
+                    const SizedBox(height: 10),
+                  ],
+                ],
+              ),
+              loading: () => const SizedBox(),
+              error: (_, _) => const SizedBox(),
             ),
             loading: () => const SizedBox(),
             error: (_, _) => const SizedBox(),
@@ -116,14 +131,22 @@ String dayLabel(int count) =>
 final _completedPlansProvider =
     FutureProvider((ref) => ref.watch(appRepositoryProvider).completedPlans());
 
-final _totalSessionsProvider =
-    FutureProvider((ref) => ref.watch(appRepositoryProvider).totalSessions());
+final _sessionsPerPlanProvider =
+    FutureProvider<Map<String, int>>((ref) =>
+        ref.watch(appRepositoryProvider).sessionsPerPlan());
 
 class _StatCard extends StatelessWidget {
-  const _StatCard({required this.label, required this.value});
+  const _StatCard({
+    required this.label,
+    required this.value,
+    this.highlighted = false,
+  });
 
   final String label;
   final String value;
+
+  /// Whether this plan is the one currently selected.
+  final bool highlighted;
 
   @override
   Widget build(BuildContext context) {
@@ -131,13 +154,24 @@ class _StatCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.55),
+        color: highlighted
+            ? theme.colorScheme.primary.withValues(alpha: 0.10)
+            : theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.55),
         borderRadius: BorderRadius.circular(18),
       ),
       child: Row(
         children: [
           Expanded(
-            child: Text(label, style: theme.textTheme.bodyMedium),
+            child: Text(
+              label,
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: highlighted
+                    ? theme.colorScheme.primary
+                    : theme.colorScheme.onSurface,
+                fontWeight:
+                    highlighted ? FontWeight.w600 : FontWeight.w400,
+              ),
+            ),
           ),
           Text(value, style: theme.textTheme.headlineSmall),
         ],

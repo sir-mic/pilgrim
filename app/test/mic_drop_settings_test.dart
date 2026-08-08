@@ -43,12 +43,13 @@ void main() {
     await tester.pumpAndSettle();
   }
 
+  Finder micDropCard() =>
+      find.ancestor(of: find.text('mic drop'), matching: find.byType(Card)).first;
+
   Future<void> enableMicDrop(WidgetTester tester) async {
-    await tester.scrollUntilVisible(
-      find.widgetWithText(SwitchListTile, 'mic drop'),
-      200,
-    );
-    await tester.tap(find.widgetWithText(SwitchListTile, 'mic drop'));
+    final card = micDropCard();
+    await tester.scrollUntilVisible(card, 200);
+    await tester.tap(find.descendant(of: card, matching: find.byType(Switch)));
     await tester.pumpAndSettle();
   }
 
@@ -79,6 +80,26 @@ void main() {
     expect(chip(tester, 'Hope').selected, isTrue);
     expect(chip(tester, 'Peace').selected, isTrue);
     expect(chip(tester, 'Joy').selected, isFalse);
+  });
+
+  testWidgets('collapsing the section keeps mic drop enabled',
+      (tester) async {
+    await pumpSettings(tester);
+    await enableMicDrop(tester);
+
+    await tester.tap(find.byIcon(Icons.expand_less));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Send one now'), findsNothing);
+
+    final switchWidget = tester.widget<Switch>(
+      find.descendant(of: micDropCard(), matching: find.byType(Switch)),
+    );
+    expect(switchWidget.value, isTrue);
+
+    await tester.tap(find.byIcon(Icons.expand_more));
+    await tester.pumpAndSettle();
+    expect(find.text('Send one now'), findsOneWidget);
   });
 
   testWidgets('deselecting every chip returns to all-categories mode',

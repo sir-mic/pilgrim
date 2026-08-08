@@ -76,8 +76,9 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
               Text('mic', style: theme.textTheme.displaySmall),
               const SizedBox(height: 8),
               Text(
-                'A quiet companion for reading your Bible.\n'
-                'It only answers four questions.',
+                'Not another Bible app.\n'
+                'mic is your Bible\'s companion — it only tells you '
+                'what to read. You read from your own Bible.',
                 style: theme.textTheme.bodyLarge,
               ),
               const SizedBox(height: 44),

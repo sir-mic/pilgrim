@@ -116,7 +116,8 @@ class SettingsScreen extends ConsumerWidget {
                 const ListTile(
                   title: Text('mic'),
                   subtitle: Text(
-                    'A quiet companion for reading the Bible.\n'
+                    'Not another Bible app — it shows you '
+                    'where to read. You open your own Bible.\n'
                     'Version 1.0.5',
                   ),
                 ),
@@ -298,6 +299,10 @@ class _MicDropTileState extends ConsumerState<_MicDropTile> {
   bool? _enabled;
   int _intervalHours = 2;
 
+  /// Whether the details (interval, categories, send now) are expanded.
+  /// Independent of [_enabled] — collapsing never turns mic drop off.
+  bool _expanded = true;
+
   /// Enabled category ids; null means every category available is enabled.
   Set<String>? _enabledCategories;
 
@@ -411,18 +416,48 @@ class _MicDropTileState extends ConsumerState<_MicDropTile> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        SwitchListTile(
-          value: _enabled!,
-          title: const Text('mic drop'),
-          subtitle: const Text('Bible verses through the day'),
-          onChanged: (v) async {
-            setState(() => _enabled = v);
-            await _apply(v);
-          },
+        InkWell(
+          onTap: () => setState(() => _expanded = !_expanded),
+          borderRadius: BorderRadius.circular(16),
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(16, 8, 8, 8),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('mic drop', style: theme.textTheme.titleMedium),
+                      const SizedBox(height: 2),
+                      Text(
+                        'Bible verses through the day',
+                        style: theme.textTheme.bodySmall,
+                      ),
+                    ],
+                  ),
+                ),
+                Switch(
+                  value: _enabled!,
+                  onChanged: (v) async {
+                    setState(() => _enabled = v);
+                    await _apply(v);
+                  },
+                ),
+                IconButton(
+                  tooltip: _expanded ? 'Hide options' : 'Show options',
+                  icon: Icon(
+                    _expanded ? Icons.expand_less : Icons.expand_more,
+                  ),
+                  onPressed: () =>
+                      setState(() => _expanded = !_expanded),
+                ),
+              ],
+            ),
+          ),
         ),
-        if (_enabled!)
+        if (_expanded)
           Padding(
-            padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
+            padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [

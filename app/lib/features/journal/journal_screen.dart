@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
+import 'package:pilgrim_content/pilgrim_content.dart';
 
 import '../../core/data/models.dart';
 import '../../core/providers.dart';
@@ -18,6 +19,7 @@ class JournalScreen extends ConsumerStatefulWidget {
 class _JournalScreenState extends ConsumerState<JournalScreen> {
   final TextEditingController _search = TextEditingController();
   String _query = '';
+  String? _filterSlug;
   List<SessionEntry>? _results;
 
   @override
@@ -30,6 +32,7 @@ class _JournalScreenState extends ConsumerState<JournalScreen> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final sessions = ref.watch(journalProvider);
+    final plans = ref.watch(allPlansProvider);
 
     return SafeArea(
       child: Column(
@@ -61,6 +64,17 @@ class _JournalScreenState extends ConsumerState<JournalScreen> {
                     prefixIcon: Icon(Icons.search, size: 20),
                   ),
                 ),
+                const SizedBox(height: 12),
+                plans.when(
+                  data: (list) => _PlanFilterBar(
+                    plans: list,
+                    selectedSlug: _filterSlug,
+                    onSelected: (slug) =>
+                        setState(() => _filterSlug = slug),
+                  ),
+                  loading: () => const SizedBox.shrink(),
+                  error: (_, _) => const SizedBox.shrink(),
+                ),
               ],
             ),
           ),
@@ -68,22 +82,36 @@ class _JournalScreenState extends ConsumerState<JournalScreen> {
           Expanded(
             child: sessions.when(
               data: (list) {
-                final display = _query.trim().isEmpty ? list : _results;
-                if (display == null) {
+                final titles = <String, String>{
+                  for (final p in plans.value ?? const <PlanDefinition>[])
+                    p.slug: p.title,
+                };
+                final searchList =
+                    _query.trim().isEmpty ? list : _results;
+                if (searchList == null) {
                   return const Center(child: CircularProgressIndicator());
                 }
-                if (display.isEmpty) {
+                var visible = searchList;
+                if (_filterSlug != null) {
+                  visible = visible
+                      .where((s) => s.planSlug == _filterSlug)
+                      .toList();
+                }
+                if (visible.isEmpty) {
                   return _EmptyJournal(
                     searching: _query.trim().isNotEmpty,
+                    filtering: _filterSlug != null,
                   );
                 }
                 return ListView.builder(
                   padding: const EdgeInsets.fromLTRB(28, 4, 28, 24),
-                  itemCount: display.length,
+                  itemCount: visible.length,
                   itemBuilder: (context, index) => _JournalTile(
-                    session: display[index],
+                    session: visible[index],
+                    planTitle: titles[visible[index].planSlug],
                     onTap: () => Navigator.of(context).push(
-                      fadeRoute(JournalDetailScreen(session: display[index])),
+                      fadeRoute(
+                          JournalDetailScreen(session: visible[index])),
                     ),
                   ),
                 );
@@ -98,11 +126,54 @@ class _JournalScreenState extends ConsumerState<JournalScreen> {
   }
 }
 
+class _PlanFilterBar extends StatelessWidget {
+  const _PlanFilterBar({
+    required this.plans,
+    required this.selectedSlug,
+    required this.onSelected,
+  });
+
+  final List<PlanDefinition> plans;
+  final String? selectedSlug;
+  final ValueChanged<String?> onSelected;
+
+  @override
+  Widget build(BuildContext context) {
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      child: Row(
+        children: [
+          ChoiceChip(
+            label: const Text('All'),
+            selected: selectedSlug == null,
+            onSelected: (_) => onSelected(null),
+            showCheckmark: false,
+          ),
+          for (final plan in plans) ...[
+            const SizedBox(width: 8),
+            ChoiceChip(
+              label: Text(plan.title),
+              selected: selectedSlug == plan.slug,
+              onSelected: (_) => onSelected(plan.slug),
+              showCheckmark: false,
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+}
+
 class _JournalTile extends StatelessWidget {
-  const _JournalTile({required this.session, required this.onTap});
+  const _JournalTile({
+    required this.session,
+    required this.onTap,
+    this.planTitle,
+  });
 
   final SessionEntry session;
   final VoidCallback onTap;
+  final String? planTitle;
 
   @override
   Widget build(BuildContext context) {
@@ -153,6 +224,14 @@ class _JournalTile extends StatelessWidget {
                   ],
                 ),
                 const SizedBox(height: 6),
+                if (planTitle != null) ...[
+                  Text(
+                    planTitle!,
+                    style: theme.textTheme.labelSmall
+                        ?.copyWith(color: theme.colorScheme.primary),
+                  ),
+                  const SizedBox(height: 2),
+                ],
                 Text(date, style: theme.textTheme.labelMedium),
                 if (session.reflection.isNotEmpty) ...[
                   const SizedBox(height: 8),
@@ -173,13 +252,20 @@ class _JournalTile extends StatelessWidget {
 }
 
 class _EmptyJournal extends StatelessWidget {
-  const _EmptyJournal({required this.searching});
+  const _EmptyJournal({required this.searching, required this.filtering});
 
   final bool searching;
+  final bool filtering;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final message = searching
+        ? 'Nothing found for that search.'
+        : filtering
+            ? 'No entries for this plan yet.'
+            : 'Your journal is empty.\n'
+                'Every completed reading will appear here.';
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(32),
@@ -190,10 +276,7 @@ class _EmptyJournal extends StatelessWidget {
                 size: 40, color: theme.colorScheme.onSurfaceVariant),
             const SizedBox(height: 16),
             Text(
-              searching
-                  ? 'Nothing found for that search.'
-                  : 'Your journal is empty.\n'
-                      'Every completed reading will appear here.',
+              message,
               textAlign: TextAlign.center,
               style: theme.textTheme.bodyLarge
                   ?.copyWith(color: theme.colorScheme.onSurfaceVariant),
