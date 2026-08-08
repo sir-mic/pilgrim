@@ -93,26 +93,61 @@ void main() {
     expect(await repo.completedPlans(), isEmpty);
   });
 
-  test('restarting a plan resets progress but keeps the journal', () async {
-    await content.reconcile(await loadBundled());
-    await repo.setCurrentPlan('slow-walk');
+    test('restarting a plan resets progress but keeps the journal', () async {
+      await content.reconcile(await loadBundled());
+      await repo.setCurrentPlan('slow-walk');
 
-    final reading =
-        await repo.currentReading('slow-walk', DateTime(2026, 8, 5));
-    await repo.insertSession(
-      date: DateTime(2026, 8, 5),
-      planSlug: 'slow-walk',
-      dayIndex: 1,
-      prompt: 'What did God show you today?',
-      reflection: 'A small step.',
-      readings: reading.day!.readings,
-    );
-    expect(await repo.completedCount('slow-walk'), 1);
+      final reading =
+          await repo.currentReading('slow-walk', DateTime(2026, 8, 5));
+      await repo.insertSession(
+        date: DateTime(2026, 8, 5),
+        planSlug: 'slow-walk',
+        dayIndex: 1,
+        prompt: 'What did God show you today?',
+        reflection: 'A small step.',
+        readings: reading.day!.readings,
+      );
+      expect(await repo.completedCount('slow-walk'), 1);
 
-    await repo.restartCurrentPlan();
-    expect(await repo.completedCount('slow-walk'), 0);
-    expect(await repo.totalSessions(), 1);
-  });
+      await repo.restartCurrentPlan();
+      expect(await repo.completedCount('slow-walk'), 0);
+      expect(await repo.totalSessions(), 1);
+    });
+
+    test('multiple chapters in one day keep the latest as today\'s reading',
+        () async {
+      await content.reconcile(await loadBundled());
+      await repo.setCurrentPlan('slow-walk');
+      final day = DateTime(2026, 8, 5);
+
+      final first = await repo.currentReading('slow-walk', day);
+      await repo.insertSession(
+        date: day,
+        planSlug: 'slow-walk',
+        dayIndex: first.currentDay,
+        prompt: 'What did God show you today?',
+        reflection: 'First chapter.',
+        readings: first.day!.readings,
+      );
+      final second = await repo.currentReading('slow-walk', day);
+      expect(second.currentDay, 2);
+      await repo.insertSession(
+        date: day,
+        planSlug: 'slow-walk',
+        dayIndex: second.currentDay,
+        prompt: 'What did God show you today?',
+        reflection: 'Second chapter.',
+        readings: second.day!.readings,
+      );
+
+      final todays = await repo.sessionOnDate('slow-walk', day);
+      expect(todays!.dayIndex, 2);
+      expect(todays.reflection, 'Second chapter.');
+
+      final reading = await repo.currentReading('slow-walk', day);
+      expect(reading.completedCount, 2);
+      expect(reading.currentDay, 3);
+    });
 
   test('settings persist and read back', () async {
     await repo.setSetting(AppRepository.keyThemeMode, 'light');

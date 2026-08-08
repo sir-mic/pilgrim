@@ -184,7 +184,9 @@ class AppRepository {
           ..where((t) =>
               t.planSlug.equals(planSlug) &
               t.date.isBiggerOrEqualValue(start) &
-              t.date.isSmallerThanValue(end)))
+              t.date.isSmallerThanValue(end))
+          ..orderBy([(t) => OrderingTerm.desc(t.dayIndex)])
+          ..limit(1))
         .getSingleOrNull();
     return row == null ? null : _toSession(row);
   }

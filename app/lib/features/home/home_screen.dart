@@ -77,7 +77,7 @@ class _TodayBody extends ConsumerWidget {
           if (reading.planFinished)
             _PlanFinished(planTitle: reading.plan.title)
           else if (reading.todaysSession != null)
-            _CompletedToday(session: reading.todaysSession!)
+            _CompletedToday(reading: reading)
           else if (reading.hasInProgress)
             _ResumeReading(reading: reading)
           else
@@ -222,13 +222,16 @@ class _ResumeReading extends ConsumerWidget {
 }
 
 class _CompletedToday extends ConsumerWidget {
-  const _CompletedToday({required this.session});
+  const _CompletedToday({required this.reading});
 
-  final SessionEntry session;
+  final CurrentReading reading;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
+    final session = reading.todaysSession!;
+    final canReadMore =
+        reading.plan.kind == 'sequential' && !reading.planFinished;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -261,10 +264,22 @@ class _CompletedToday extends ConsumerWidget {
         ],
         const SizedBox(height: 12),
         Text(
-          'The next reading will be here tomorrow.',
+          canReadMore
+              ? 'The plan will wait here until tomorrow — or you can '
+                  'keep going now.'
+              : 'The next reading will be here tomorrow.',
           style: theme.textTheme.bodySmall,
         ),
-        const SizedBox(height: 36),
+        if (canReadMore) ...[
+          const SizedBox(height: 28),
+          PrimaryButton(
+            label: 'Read one more chapter',
+            onPressed: () => Navigator.of(context).push(
+              fadeRoute(ReadingFlowScreen(reading: reading, resume: true)),
+            ),
+          ),
+        ],
+        const SizedBox(height: 12),
         GhostButton(
           label: 'View in journal',
           onPressed: () => Navigator.of(context).push(
