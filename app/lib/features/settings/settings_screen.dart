@@ -405,7 +405,8 @@ class _MicDropTileState extends ConsumerState<_MicDropTile> {
 
   Widget _buildBody(ThemeData theme, List<VerseNudge> verses) {
     final available = _availableCategories(verses);
-    final chosen = _effectiveCategories(verses);
+    final allActive = _enabledCategories == null;
+    bool isSelected(String id) => _enabledCategories?.contains(id) ?? false;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -434,7 +435,7 @@ class _MicDropTileState extends ConsumerState<_MicDropTile> {
                       for (final hours in _intervals)
                         ButtonSegment(
                           value: hours,
-                          label: Text(hours == 1 ? '1 hour' : '$hours hours'),
+                          label: Text('${hours}h'),
                         ),
                     ],
                     selected: {_intervalHours},
@@ -460,28 +461,40 @@ class _MicDropTileState extends ConsumerState<_MicDropTile> {
                   children: [
                     for (final id in available)
                       FilterChip(
-                        selected: chosen.contains(id),
+                        selected: isSelected(id),
                         showCheckmark: false,
                         avatar: Icon(
                           micDropCategoryFor(id).icon,
                           size: 17,
-                          color: chosen.contains(id)
+                          color: isSelected(id)
                               ? theme.colorScheme.primary
                               : theme.colorScheme.onSurfaceVariant,
                         ),
                         label: Text(micDropCategoryFor(id).label),
                         onSelected: (selected) async {
-                          final next = {...chosen};
+                          final next = {...?_enabledCategories};
                           if (selected) {
                             next.add(id);
                           } else {
                             next.remove(id);
                           }
-                          setState(() => _enabledCategories = next);
+                          setState(() => _enabledCategories =
+                              next.isEmpty ? null : next);
                           await _apply(true, categories: next);
                         },
                       ),
                   ],
+                ),
+                const SizedBox(height: 12),
+                Text(
+                  allActive
+                      ? 'All ${available.length} categories active — '
+                          'tap to pick specific ones.'
+                      : '${_enabledCategories!.length} of '
+                          '${available.length} categories active.',
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: theme.colorScheme.onSurfaceVariant,
+                  ),
                 ),
                 const SizedBox(height: 16),
                 SizedBox(
